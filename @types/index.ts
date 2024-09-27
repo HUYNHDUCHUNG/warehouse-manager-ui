@@ -19,13 +19,24 @@ export type Category = {
     createdAt: Date;
     updatedAt: Date;
 }
+export interface Supplier {
+    id: number
+    supplier_name: string
+    contract: string
+    email: string
+    phone: string
+    createdAt: string
+    updatedAt: string
+}
 export interface PurchaseOrder {
     id: number;
     product_id: string;
+    product: Product;
     quantity: string;
     unit_price: string;
     total_price: string;
     supplier_id: string;
+    supplier: Supplier;
     note?: string;
     createdAt: Date;
     updatedAt: Date;

@@ -1,5 +1,6 @@
 'use client'
 import { Product } from '@/@types'
+import AlertDialogComponent from '@/components/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -51,7 +52,7 @@ const ProductPage = () => {
     }
   }
   return (
-    <div className='p-8'>
+    <div className='bg-white min-h-[100vh] p-4 rounded-xl'>
       <Link href={'/product/create'}>
         <Button>Thêm sản phẩm</Button>
       </Link>
@@ -102,17 +103,26 @@ const ProductPage = () => {
                 {/* <TableCell>{product.updatedAt}</TableCell>
                 <TableCell>{product.createdAt}</TableCell> */}
                 <TableCell className='flex items-center gap-2'>
-                  <Button
-                    onClick={() => onDeleteProduct(product.id)}
-                    className=' bg-red-600 hover:bg-red-500'
-                  >
-                    <Trash size={14} />
-                  </Button>
-                  <Link href={'/product/edit'}>
-                    <Button className=' bg-sky-600 hover:bg-sky-500'>
-                      <Pencil size={14} />
-                    </Button>
-                  </Link>
+                  <AlertDialogComponent
+                    title='Xóa sản phẩm'
+                    description={`Bạn có chắc chắn muốn xóa sản phẩm "${product.product_name}"? Hành động này không thể hoàn tác.`}
+                    triggerText='Xóa'
+                    actionText='Xác nhận'
+                    cancelText='Hủy bỏ'
+                    onConfirm={() => onDeleteProduct(product.id)}
+                    triggerElement={
+                      <Button className=' bg-red-600 hover:bg-red-500'>
+                        <Trash size={14} />
+                      </Button>
+                    }
+                  />
+                  {product?.id && (
+                    <Link href={`/product/edit/${product.id}`}>
+                      <Button className=' bg-sky-600 hover:bg-sky-500'>
+                        <Pencil size={14} />
+                      </Button>
+                    </Link>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

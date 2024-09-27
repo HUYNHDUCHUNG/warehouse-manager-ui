@@ -21,10 +21,10 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
-import { Category } from '@/@types'
+import { Category, Product } from '@/@types'
 import axiosInstance from '@/config/axiosConfig'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { Textarea } from '@/components/ui/textarea'
 
 const formSchema = z.object({
@@ -32,48 +32,67 @@ const formSchema = z.object({
   category_id: z.number(),
   description: z.string().min(2).max(10000),
   price: z.coerce.number(),
-  unit_calc: z.coerce.string().min(1).max(100)
+  unit_calc: z.coerce.string().min(1).max(100),
+  inventory_quantity: z.coerce.number().min(0)
 })
 
-const CreateProduct = () => {
+const EditProduct = () => {
   const router = useRouter()
+  const { productId } = useParams() // Lấy id của sản phẩm từ URL
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       product_name: '',
+      category_id: 0,
       description: '',
-      price: 0
+      price: 0,
+      unit_calc: '',
+      inventory_quantity: 0
     }
   })
 
   const [categories, setCategories] = useState<Category[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
   useEffect(() => {
     const getCategories = async () => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const data = await axiosInstance.get<any, Category[]>(
-          '/category' // Điều chỉnh URL để lấy tất cả sản phẩm
-        )
-
-        setCategories(data) // Lưu danh sách sản phẩm vào state
+        const data = await axiosInstance.get<any, Category[]>('/category')
         console.log(data)
+        setCategories(data)
       } catch (error) {
-        console.error('Error fetching products:', error)
+        console.error('Error fetching categories:', error)
+      }
+    }
+
+    const getProduct = async () => {
+      try {
+        const data = await axiosInstance.get<Product>(`/product/${productId}`)
+        console.log(productId)
+        console.log(data)
+        form.reset(data) // Đặt dữ liệu của sản phẩm vào form
+        setIsLoading(false)
+      } catch (error) {
+        console.error('Error fetching product:', error)
       }
     }
 
     getCategories()
-  }, [])
+    getProduct()
+  }, [productId, form])
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axiosInstance.post('/product', values)
-      //   toast.success('Course created')
+      await axiosInstance.patch(`/product/${productId}`, values)
       router.push(`/product`)
     } catch (error) {
-      //   toast.error('Something Wrong')
+      console.error('Error updating product:', error)
     }
   }
+
+  if (isLoading) return <p>Loading...</p>
+
   return (
     <div className='bg-white p-4 rounded-xl'>
       <Form {...form}>
@@ -89,7 +108,6 @@ const CreateProduct = () => {
                     <FormControl>
                       <Input placeholder='' {...field} />
                     </FormControl>
-                    {/* <FormDescription>This is your public display name.</FormDescription> */}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -103,7 +121,6 @@ const CreateProduct = () => {
                     <FormControl>
                       <Input placeholder='' {...field} />
                     </FormControl>
-                    {/* <FormDescription>This is your public display name.</FormDescription> */}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -157,17 +174,28 @@ const CreateProduct = () => {
                 <FormControl>
                   <Textarea placeholder='' {...field} />
                 </FormControl>
-                {/* <FormDescription>This is your public display name.</FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
           />
-
-          <Button type='submit'>Thêm sản phẩm</Button>
+          <FormField
+            control={form.control}
+            name='inventory_quantity'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Số lượng tồn kho</FormLabel>
+                <FormControl>
+                  <Input placeholder='' {...field} type='number' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type='submit'>Cập nhật sản phẩm</Button>
         </form>
       </Form>
     </div>
   )
 }
 
-export default CreateProduct
+export default EditProduct

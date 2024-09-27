@@ -3,7 +3,6 @@
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -21,126 +20,139 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
-import { Category } from '@/@types'
+import { Textarea } from '@/components/ui/textarea'
+import { Product, Supplier } from '@/@types'
 import axiosInstance from '@/config/axiosConfig'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Textarea } from '@/components/ui/textarea'
 
 const formSchema = z.object({
-  product_name: z.string().min(2).max(100),
-  category_id: z.number(),
-  description: z.string().min(2).max(10000),
-  price: z.coerce.number(),
-  unit_calc: z.coerce.string().min(1).max(100)
+  product_id: z.number().min(1, 'Chọn sản phẩm'),
+  supplier_id: z.number().min(1, 'Chọn nhà cung cấp'),
+  quantity: z.coerce.number().min(1, 'Số lượng phải lớn hơn 0'),
+  unit_price: z.coerce.number().min(0, 'Đơn giá không thể âm'),
+  note: z.string().optional()
 })
 
-const CreateProduct = () => {
+const CreatePurchaseOrder = () => {
   const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      product_name: '',
-      description: '',
-      price: 0
+      product_id: 0,
+      supplier_id: 0,
+      quantity: 1,
+      unit_price: 0,
+      note: ''
     }
   })
 
-  const [categories, setCategories] = useState<Category[]>([])
+  const [products, setProducts] = useState<Product[]>([])
+  const [suppliers, setSuppliers] = useState<Supplier[]>([])
+
   useEffect(() => {
-    const getCategories = async () => {
+    const fetchProductsAndSuppliers = async () => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const data = await axiosInstance.get<any, Category[]>(
-          '/category' // Điều chỉnh URL để lấy tất cả sản phẩm
-        )
-
-        setCategories(data) // Lưu danh sách sản phẩm vào state
-        console.log(data)
+        const productsResponse = await axiosInstance.get<any, Product[]>('/product')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const suppliersResponse = await axiosInstance.get<any, Supplier[]>('/supplier')
+        setProducts(productsResponse)
+        setSuppliers(suppliersResponse)
       } catch (error) {
-        console.error('Error fetching products:', error)
+        console.error('Error fetching products or suppliers:', error)
       }
     }
-
-    getCategories()
+    fetchProductsAndSuppliers()
   }, [])
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axiosInstance.post('/product', values)
-      //   toast.success('Course created')
-      router.push(`/product`)
+      await axiosInstance.post('/purchase-order', values)
+      router.push('/purchase-order') // Chuyển hướng về trang danh sách đơn hàng nhập
     } catch (error) {
-      //   toast.error('Something Wrong')
+      console.error('Error creating purchase order:', error)
     }
   }
+
   return (
-    <div className='p-8'>
+    <div className='bg-white p-4 rounded-xl'>
+      <h1 className='text-2xl font-bold mb-4'>Tạo phiếu nhập hàng</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
           <div className='flex gap-10'>
             <div className='w-[50%] flex flex-col gap-4'>
               <FormField
                 control={form.control}
-                name='product_name'
+                name='product_id'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tên sản phẩm</FormLabel>
-                    <FormControl>
-                      <Input placeholder='' {...field} />
-                    </FormControl>
-                    {/* <FormDescription>This is your public display name.</FormDescription> */}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='unit_calc'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Đơn vị tính</FormLabel>
-                    <FormControl>
-                      <Input placeholder='' {...field} />
-                    </FormControl>
-                    {/* <FormDescription>This is your public display name.</FormDescription> */}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className='w-[50%] gap-4'>
-              <FormField
-                control={form.control}
-                name='category_id'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Loại sản phẩm</FormLabel>
+                    <FormLabel>Sản phẩm</FormLabel>
                     <FormControl>
                       <Select onValueChange={(value) => field.onChange(parseInt(value))}>
                         <SelectTrigger className='w-[180px]'>
-                          <SelectValue placeholder='Loại sản phẩm' {...field} />
+                          <SelectValue placeholder='Chọn sản phẩm' />
                         </SelectTrigger>
                         <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category.id} value={category.id.toString()}>
-                              {category.name}
+                          {products.map((product) => (
+                            <SelectItem key={product.id} value={product.id.toString()}>
+                              {product.product_name}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
-                name='price'
+                name='quantity'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Giá sản phẩm</FormLabel>
+                    <FormLabel>Số lượng</FormLabel>
                     <FormControl>
-                      <Input placeholder='' {...field} type='number' />
+                      <Input type='number' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className='w-[50%] flex flex-col gap-4'>
+              <FormField
+                control={form.control}
+                name='supplier_id'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nhà cung cấp</FormLabel>
+                    <FormControl>
+                      <Select onValueChange={(value) => field.onChange(parseInt(value))}>
+                        <SelectTrigger className='w-[180px]'>
+                          <SelectValue placeholder='Chọn nhà cung cấp' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {suppliers.map((supplier) => (
+                            <SelectItem key={supplier.id} value={supplier.id.toString()}>
+                              {supplier.supplier_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='unit_price'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Đơn giá</FormLabel>
+                    <FormControl>
+                      <Input type='number' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -150,24 +162,22 @@ const CreateProduct = () => {
           </div>
           <FormField
             control={form.control}
-            name='description'
+            name='note'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Mô tả sản phẩm</FormLabel>
+                <FormLabel>Ghi chú</FormLabel>
                 <FormControl>
-                  <Textarea placeholder='' {...field} />
+                  <Textarea placeholder='Nhập ghi chú...' {...field} />
                 </FormControl>
-                {/* <FormDescription>This is your public display name.</FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
           />
-
-          <Button type='submit'>Thêm sản phẩm</Button>
+          <Button type='submit'>Tạo phiếu nhập hàng</Button>
         </form>
       </Form>
     </div>
   )
 }
 
-export default CreateProduct
+export default CreatePurchaseOrder
