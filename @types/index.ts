@@ -32,9 +32,21 @@ export interface PurchaseOrder {
     id: number;
     codePurchaseOrder: string;
     total_price: string;
+    dateImport: string;
     supplier_id: string;
     note?: string;
     supplier: Supplier;
+    purchaseOrderDetails: PurchaseOrderDetail[];
     createdAt: Date;
     updatedAt: Date;
+}
+
+export interface PurchaseOrderDetail {
+    id: number;
+    purchaseOrderId: string;
+    productId: string;
+    quantity: string;
+    unitPrice: string;
+    totalPrice: string;
+
 }

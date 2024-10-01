@@ -22,7 +22,7 @@ import {
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
 
-import { Pencil, Trash } from 'lucide-react'
+import { Trash } from 'lucide-react'
 import Link from 'next/link'
 import AlertDialogComponent from '@/components/alert-dialog'
 
@@ -104,7 +104,7 @@ const PurchaseOrderPage = () => {
                 <TableHead>Mã phiếu nhập</TableHead>
                 <TableHead>Nhà cung cấp</TableHead>
                 <TableHead>Tổng giá</TableHead>
-                <TableHead>Ghi chú</TableHead>
+                <TableHead>Ngày nhập</TableHead>
                 <TableHead>Hành động</TableHead>
               </TableRow>
             </TableHeader>
@@ -116,7 +116,7 @@ const PurchaseOrderPage = () => {
 
                   <TableCell className='line-clamp-2'>{order.supplier.supplier_name}</TableCell>
                   <TableCell>{order.total_price}</TableCell>
-                  <TableCell>{order.note}</TableCell>
+                  <TableCell>{order.dateImport}</TableCell>
                   <TableCell className='flex items-center gap-2'>
                     <AlertDialogComponent
                       title='Xóa phiếu nhập hàng'
@@ -132,13 +132,12 @@ const PurchaseOrderPage = () => {
                       }
                     />
                     {order?.id && (
-                      <Link href={`/purchase/edit/${order.id}`}>
-                        {' '}
-                        {/* Thay đổi URL để chỉnh sửa đơn mua hàng */}
-                        <Button className='bg-sky-600 hover:bg-sky-500'>
-                          <Pencil size={14} />
-                        </Button>
-                      </Link>
+                      <Button
+                        onClick={() => window.open(`/purchase-order/invoice/${order.id}`, '_blank')}
+                        className='bg-sky-600 hover:bg-sky-500'
+                      >
+                        Invoice
+                      </Button>
                     )}
                   </TableCell>
                 </TableRow>
