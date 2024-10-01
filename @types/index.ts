@@ -30,14 +30,11 @@ export interface Supplier {
 }
 export interface PurchaseOrder {
     id: number;
-    product_id: string;
-    product: Product;
-    quantity: string;
-    unit_price: string;
+    codePurchaseOrder: string;
     total_price: string;
     supplier_id: string;
-    supplier: Supplier;
     note?: string;
+    supplier: Supplier;
     createdAt: Date;
     updatedAt: Date;
 }

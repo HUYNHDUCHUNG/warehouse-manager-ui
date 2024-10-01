@@ -78,7 +78,7 @@ const ProductPage = () => {
               <TableHead>Tên sản phẩm</TableHead>
               <TableHead>Loại sản phẩm</TableHead>
               {/* <TableHead>Mô tả</TableHead> */}
-              <TableHead>Giá</TableHead>
+              {/* <TableHead>Giá</TableHead> */}
               <TableHead>Đơn vị tính</TableHead>
               <TableHead>Số lượng</TableHead>
               {/* <TableHead>Ngày nhập gần nhất</TableHead> */}
@@ -95,7 +95,7 @@ const ProductPage = () => {
                 <TableCell>{product.product_name}</TableCell>
                 <TableCell>{product.category.name}</TableCell>
                 {/* <TableCell className=''>{product.description}</TableCell> */}
-                <TableCell>{product.price}</TableCell>
+                {/* <TableCell>{product.price}</TableCell> */}
                 <TableCell>{product.unit_calc}</TableCell>
                 <TableCell>{product.inventory_quantity}</TableCell>
                 {/* <TableCell>{product.warehouse_latest}</TableCell> */}

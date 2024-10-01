@@ -64,7 +64,6 @@ const PurchaseOrderPage = () => {
     <div>
       <div>
         <div className='mb-4'>
-          <h1 className='text-xl'>Quản lý nhập kho</h1>
           <div className='mt-1'>
             <Breadcrumb>
               <BreadcrumbList>
@@ -101,27 +100,22 @@ const PurchaseOrderPage = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Tên sản phẩm</TableHead>
-                <TableHead>Số lượng</TableHead>
-                <TableHead>Đơn giá</TableHead>
-                <TableHead>Tổng giá</TableHead>
+                <TableHead>STT</TableHead>
+                <TableHead>Mã phiếu nhập</TableHead>
                 <TableHead>Nhà cung cấp</TableHead>
+                <TableHead>Tổng giá</TableHead>
                 <TableHead>Ghi chú</TableHead>
                 <TableHead>Hành động</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {purchaseOrders.map((order) => (
+              {purchaseOrders.map((order, index) => (
                 <TableRow key={order.id}>
-                  <TableCell>{order.id}</TableCell>
-                  <TableCell className='max-w-[200px] w-[200px]'>
-                    <p className='line-clamp-2 '> {order.product.product_name}</p>
-                  </TableCell>
-                  <TableCell>{order.quantity}</TableCell>
-                  <TableCell>{order.unit_price}</TableCell>
-                  <TableCell>{order.total_price}</TableCell>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{order.codePurchaseOrder}</TableCell>
+
                   <TableCell className='line-clamp-2'>{order.supplier.supplier_name}</TableCell>
+                  <TableCell>{order.total_price}</TableCell>
                   <TableCell>{order.note}</TableCell>
                   <TableCell className='flex items-center gap-2'>
                     <AlertDialogComponent
