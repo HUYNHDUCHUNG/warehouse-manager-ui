@@ -17,18 +17,28 @@ export const Sidebar = () => {
         <Logo />
       </div>
       <div>
-        <Button className='px-6 py-6 flex items-center gap-x-2 bg-transparent w-full justify-start hover:bg-sky-600 rounded-none shadow-none'>
-          <div>
-            <LayoutDashboard />
-          </div>
-          <span>Trang chủ</span>
-        </Button>
+        <Link href={'/'}>
+          <Button className='px-6 py-6 flex items-center gap-x-2 bg-transparent w-full justify-start hover:bg-sky-600 rounded-none shadow-none'>
+            <div>
+              <LayoutDashboard />
+            </div>
+            <span>Trang chủ</span>
+          </Button>
+        </Link>
         <Link href={'/product'}>
           <Button className='px-6 py-6 flex items-center gap-x-2 bg-transparent w-full justify-start hover:bg-sky-600 rounded-none shadow-none'>
             <div>
               <PackageSearch />
             </div>
-            <span>Quản lý thiết bị</span>
+            <span>Quản lý sản phẩm</span>
+          </Button>
+        </Link>
+        <Link href={'/supplier'}>
+          <Button className='px-6 py-6 flex items-center gap-x-2 bg-transparent w-full justify-start hover:bg-sky-600 rounded-none shadow-none'>
+            <div>
+              <PackageSearch />
+            </div>
+            <span>Quản lý nhà cung cấp</span>
           </Button>
         </Link>
         <Link href={'/purchase-order'}>

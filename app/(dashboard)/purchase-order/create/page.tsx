@@ -43,6 +43,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
+import { formatCurrency } from '@/lib/utils'
 
 const productSchema = z.object({
   productId: z.string().min(1, 'Chọn sản phẩm'),
@@ -124,10 +125,6 @@ const CreatePurchaseOrder = () => {
       return sum + (parseFloat(product.totalPrice) || 0)
     }, 0)
   }, [productList])
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
-  }
 
   return (
     <div>

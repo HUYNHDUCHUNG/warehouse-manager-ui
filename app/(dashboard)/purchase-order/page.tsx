@@ -25,6 +25,7 @@ import {
 import { Trash } from 'lucide-react'
 import Link from 'next/link'
 import AlertDialogComponent from '@/components/alert-dialog'
+import { formatCurrency } from '@/lib/utils'
 
 const PurchaseOrderPage = () => {
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]) // Sử dụng mảng PurchaseOrder
@@ -115,7 +116,7 @@ const PurchaseOrderPage = () => {
                   <TableCell>{order.codePurchaseOrder}</TableCell>
 
                   <TableCell className='line-clamp-2'>{order.supplier.supplier_name}</TableCell>
-                  <TableCell>{order.total_price}</TableCell>
+                  <TableCell>{formatCurrency(parseInt(order.total_price))}</TableCell>
                   <TableCell>{order.dateImport}</TableCell>
                   <TableCell className='flex items-center gap-2'>
                     <AlertDialogComponent
