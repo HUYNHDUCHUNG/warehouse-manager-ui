@@ -50,3 +50,38 @@ export interface PurchaseOrderDetail {
     totalPrice: string;
 
 }
+
+export interface ExportOrder {
+    id: number;
+    codeExportOrder: string;
+    total_price: string;
+    dateExport: string;
+    customerId: string;
+    note?: string;
+    supplier: Supplier;
+    exportOrderDetails: ExportOrderDetail[];
+    customer: Customer;
+    status: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+
+}
+
+export interface ExportOrderDetail {
+    id: number;
+    exportOrderId: string;
+    productId: string;
+    quantity: string;
+    unitPrice: string;
+    totalPrice: string;
+
+}
+
+export interface Customer {
+    id: number;
+    fullName: string;
+    contract: string;
+    email: string;
+    phone: string;
+
+}

@@ -49,7 +49,7 @@ export const Sidebar = () => {
             <span>Quản lý nhập kho</span>
           </Button>
         </Link>
-        <Link href={'/product'}>
+        <Link href={'/export-order'}>
           <Button className='px-6 py-6 flex items-center gap-x-2 bg-transparent w-full justify-start hover:bg-sky-600 rounded-none shadow-none'>
             <div>
               <BaggageClaim />
