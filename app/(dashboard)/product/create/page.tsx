@@ -20,6 +20,14 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator
+} from '@/components/ui/breadcrumb'
 import { Input } from '@/components/ui/input'
 import { Category } from '@/@types'
 import axiosInstance from '@/config/axiosConfig'
@@ -75,97 +83,119 @@ const CreateProduct = () => {
     }
   }
   return (
-    <div className='bg-white p-4 rounded-xl'>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-          <div className='flex gap-10'>
-            <div className='w-[50%] flex flex-col gap-4'>
-              <FormField
-                control={form.control}
-                name='product_name'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tên sản phẩm</FormLabel>
-                    <FormControl>
-                      <Input placeholder='' {...field} />
-                    </FormControl>
-                    {/* <FormDescription>This is your public display name.</FormDescription> */}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='unit_calc'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Đơn vị tính</FormLabel>
-                    <FormControl>
-                      <Input placeholder='' {...field} />
-                    </FormControl>
-                    {/* <FormDescription>This is your public display name.</FormDescription> */}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+    <div>
+      <div className='mb-4'>
+        <div className='mt-1'>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href='/'>Home</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href='/product'>Quản lý sản phẩm</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Thêm sản phẩm</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      </div>
+      <div className='bg-white p-4 rounded-xl'>
+        <h1 className='text-xl font-bold'>Thêm sản phẩm</h1>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+            <div className='flex gap-10'>
+              <div className='w-[50%] flex flex-col gap-4'>
+                <FormField
+                  control={form.control}
+                  name='product_name'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tên sản phẩm</FormLabel>
+                      <FormControl>
+                        <Input placeholder='' {...field} />
+                      </FormControl>
+                      {/* <FormDescription>This is your public display name.</FormDescription> */}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='unit_calc'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Đơn vị tính</FormLabel>
+                      <FormControl>
+                        <Input placeholder='' {...field} />
+                      </FormControl>
+                      {/* <FormDescription>This is your public display name.</FormDescription> */}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className='w-[50%] gap-4 flex flex-col'>
+                <FormField
+                  control={form.control}
+                  name='category_id'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Loại sản phẩm</FormLabel>
+                      <FormControl>
+                        <Select onValueChange={(value) => field.onChange(parseInt(value))}>
+                          <SelectTrigger className='w-[180px]'>
+                            <SelectValue placeholder='Loại sản phẩm' {...field} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {categories.map((category) => (
+                              <SelectItem key={category.id} value={category.id.toString()}>
+                                {category.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='price'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Giá sản phẩm</FormLabel>
+                      <FormControl>
+                        <Input placeholder='' {...field} type='number' />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
-            <div className='w-[50%] gap-4'>
-              <FormField
-                control={form.control}
-                name='category_id'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Loại sản phẩm</FormLabel>
-                    <FormControl>
-                      <Select onValueChange={(value) => field.onChange(parseInt(value))}>
-                        <SelectTrigger className='w-[180px]'>
-                          <SelectValue placeholder='Loại sản phẩm' {...field} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category.id} value={category.id.toString()}>
-                              {category.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='price'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Giá sản phẩm</FormLabel>
-                    <FormControl>
-                      <Input placeholder='' {...field} type='number' />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
-          <FormField
-            control={form.control}
-            name='description'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Mô tả sản phẩm</FormLabel>
-                <FormControl>
-                  <Textarea placeholder='' {...field} />
-                </FormControl>
-                {/* <FormDescription>This is your public display name.</FormDescription> */}
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name='description'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Mô tả sản phẩm</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder='' {...field} />
+                  </FormControl>
+                  {/* <FormDescription>This is your public display name.</FormDescription> */}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Button type='submit'>Thêm sản phẩm</Button>
-        </form>
-      </Form>
+            <Button type='submit'>Thêm sản phẩm</Button>
+          </form>
+        </Form>
+      </div>
     </div>
   )
 }

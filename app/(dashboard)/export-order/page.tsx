@@ -105,7 +105,8 @@ const ExportOrderPage = () => {
                 <TableHead>Mã phiếu xuất</TableHead>
                 <TableHead>Khách hàng</TableHead>
                 <TableHead>Tổng giá</TableHead>
-                <TableHead>Ngày nhập</TableHead>
+                <TableHead>Ngày tạo đơn</TableHead>
+                <TableHead>Điều kiện xuất kho</TableHead>
                 <TableHead>Hành động</TableHead>
               </TableRow>
             </TableHeader>
@@ -118,6 +119,13 @@ const ExportOrderPage = () => {
                   <TableCell className='line-clamp-2'>{exportOrder.customer.fullName}</TableCell>
                   <TableCell>{formatCurrency(parseInt(exportOrder.total_price))}</TableCell>
                   <TableCell>{exportOrder.dateExport}</TableCell>
+                  <TableCell>
+                    {exportOrder.isFullyAvailable ? (
+                      <span className='bg-green-800 text-white'>Đủ hàng</span>
+                    ) : (
+                      <span className='bg-red-600 text-white'>Thiếu hàng</span>
+                    )}
+                  </TableCell>
                   <TableCell className='flex items-center gap-2'>
                     <AlertDialogComponent
                       title='Xóa phiếu nhập hàng'

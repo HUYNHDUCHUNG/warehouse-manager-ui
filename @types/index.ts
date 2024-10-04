@@ -60,6 +60,7 @@ export interface ExportOrder {
     note?: string;
     supplier: Supplier;
     exportOrderDetails: ExportOrderDetail[];
+    isFullyAvailable: boolean;
     customer: Customer;
     status: boolean;
     createdAt: Date;
@@ -74,6 +75,9 @@ export interface ExportOrderDetail {
     quantity: string;
     unitPrice: string;
     totalPrice: string;
+    isAvailable: boolean;
+    availableQuantity: string,
+    shortageQuantity: string;
 
 }
 

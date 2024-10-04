@@ -59,6 +59,7 @@ const SupplierPage = () => {
       //   toast.error('Something Wrong')
     }
   }
+
   return (
     <div>
       <div className='mb-4'>
@@ -79,7 +80,7 @@ const SupplierPage = () => {
       <div className='bg-white min-h-[100vh] p-4 rounded-xl'>
         <div className='flex justify-between mb-4'>
           <h1 className='text-xl font-bold'>Danh sách nhà cung cấp</h1>
-          <Link href={'/product/create'}>
+          <Link href={'/supplier/create'}>
             <Button>Thêm nhà cung cấp</Button>
           </Link>
         </div>
@@ -133,7 +134,7 @@ const SupplierPage = () => {
                       }
                     />
                     {supplier?.id && (
-                      <Link href={`/product/edit/${supplier.id}`}>
+                      <Link href={`/supplier/create/${supplier.id}`}>
                         <Button className=' bg-sky-600 hover:bg-sky-500'>
                           <Pencil size={14} />
                         </Button>
