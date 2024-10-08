@@ -48,6 +48,7 @@ export interface PurchaseOrderDetail {
     quantity: string;
     unitPrice: string;
     totalPrice: string;
+    product: Product;
 
 }
 
@@ -58,13 +59,12 @@ export interface ExportOrder {
     dateExport: string;
     customerId: string;
     note?: string;
-    supplier: Supplier;
     exportOrderDetails: ExportOrderDetail[];
     isFullyAvailable: boolean;
     customer: Customer;
-    status: boolean;
-    createdAt: Date;
-    updatedAt: Date;
+    statusOrder: boolean;
+    createdAt: string;
+    updatedAt: string;
 
 }
 
@@ -72,6 +72,7 @@ export interface ExportOrderDetail {
     id: number;
     exportOrderId: string;
     productId: string;
+    productName: string;
     quantity: string;
     unitPrice: string;
     totalPrice: string;

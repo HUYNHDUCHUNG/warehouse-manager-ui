@@ -140,10 +140,16 @@ const ExportOrderPage = () => {
                         </Button>
                       }
                     />
+
                     {exportOrder?.id && (
+                      <Link href={`/export-order/detail/${exportOrder.id}`}>
+                        <Button className='bg-sky-600 hover:bg-sky-500'>Detail</Button>
+                      </Link>
+                    )}
+                    {exportOrder.isFullyAvailable && (
                       <Button
                         onClick={() =>
-                          window.open(`/purchase-order/invoice/${exportOrder.id}`, '_blank')
+                          window.open(`/invoice/export-order/${exportOrder.id}`, '_blank')
                         }
                         className='bg-sky-600 hover:bg-sky-500'
                       >

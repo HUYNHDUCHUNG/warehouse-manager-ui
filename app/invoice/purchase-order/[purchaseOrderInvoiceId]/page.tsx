@@ -20,6 +20,7 @@ const InvoicePage = () => {
       if (id) {
         try {
           const data = await axiosInstance.get<any, PurchaseOrder>(`/purchase-order/${id}`)
+          console.log(data)
           setPurchaseOrder(data)
         } catch (error) {
           console.error('Error fetching purchase order:', error)

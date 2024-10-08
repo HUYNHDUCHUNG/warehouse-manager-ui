@@ -134,7 +134,7 @@ const PurchaseOrderPage = () => {
                     />
                     {order?.id && (
                       <Button
-                        onClick={() => window.open(`/purchase-order/invoice/${order.id}`, '_blank')}
+                        onClick={() => window.open(`/invoice/purchase-order/${order.id}`, '_blank')}
                         className='bg-sky-600 hover:bg-sky-500'
                       >
                         Invoice
