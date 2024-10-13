@@ -21,9 +21,7 @@ const SupplierForm: React.FC<SupplierFormProps> = ({ initialData }) => {
     supplier_name: '',
     contract: '',
     email: '',
-    phone: '',
-    createdAt: '',
-    updatedAt: ''
+    phone: ''
   })
 
   useEffect(() => {
@@ -40,9 +38,9 @@ const SupplierForm: React.FC<SupplierFormProps> = ({ initialData }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const url = initialData ? `/api/supplier/${initialData.id}` : '/api/supplier'
+      const url = initialData ? `/supplier/${initialData.id}` : '/supplier'
       const method = initialData ? 'PUT' : 'POST'
-
+      console.log(formData)
       const response = await fetch(url, {
         method,
         headers: {
@@ -60,7 +58,7 @@ const SupplierForm: React.FC<SupplierFormProps> = ({ initialData }) => {
       //     description: 'The supplier has been successfully saved.'
       //   })
 
-      router.push('/suppliers')
+      router.push('/supplier')
     } catch (error) {
       console.error('Error saving supplier:', error)
       //   toast({
