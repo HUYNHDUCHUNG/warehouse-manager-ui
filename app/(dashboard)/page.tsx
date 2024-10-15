@@ -27,7 +27,7 @@ const Dashboard = () => {
   return (
     <div className='p-6 bg-gray-100 min-h-screen'>
       <div className='flex justify-between items-center mb-6'>
-        <h1 className='text-2xl font-bold'>Good Morning, Admin!</h1>
+        <h1 className='text-2xl font-bold'>Chào buổi sáng, Admin!</h1>
         <div className='flex items-center space-x-4'>
           <div className='text-sm text-gray-500'>01 Jan, 2024 to 31 Jan, 2024</div>
         </div>
@@ -36,39 +36,39 @@ const Dashboard = () => {
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6'>
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <div className='text-sm font-medium'>TOTAL EARNINGS</div>
+            <div className='text-sm font-medium'>Tổng thu nhập</div>
             <div className='text-sm font-medium text-green-500'>+16.24%</div>
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold'>$559.25k</div>
             <Button variant='link' className='p-0 h-auto'>
-              View net earnings
+              Xem thu nhập ròng
             </Button>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <div className='text-sm font-medium'>ORDERS</div>
+            <div className='text-sm font-medium'>Đơn hàng</div>
             <div className='text-sm font-medium text-red-500'>-3.57%</div>
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold'>36,894</div>
             <Button variant='link' className='p-0 h-auto'>
-              View all orders
+              Xem tất cả đơn hàng
             </Button>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <div className='text-sm font-medium'>CUSTOMERS</div>
+            <div className='text-sm font-medium'>Khách hàng</div>
             <div className='text-sm font-medium text-green-500'>+29.08%</div>
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold'>183.35M</div>
             <Button variant='link' className='p-0 h-auto'>
-              See details
+              Xem chi tiết
             </Button>
           </CardContent>
         </Card>
@@ -90,7 +90,7 @@ const Dashboard = () => {
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6'>
         <Card className='col-span-2'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <div className='text-xl font-bold'>Revenue</div>
+            <div className='text-xl font-bold'>Doanh thu</div>
             <div className='flex space-x-2'>
               <Button variant='outline' size='sm'>
                 ALL
@@ -151,7 +151,7 @@ const Dashboard = () => {
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
         <Card>
           <CardHeader>
-            <div className='text-xl font-bold'>Best Selling Products</div>
+            <div className='text-xl font-bold'>Đơn hàng xuất nhiều nhất</div>
           </CardHeader>
           <CardContent>
             <table className='w-full'>

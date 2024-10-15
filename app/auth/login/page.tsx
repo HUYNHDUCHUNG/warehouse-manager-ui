@@ -1,6 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import React from 'react'
 import { useState } from 'react'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useLocalStorage } from 'usehooks-ts'
 import {
   Card,
   CardContent,
@@ -11,14 +15,77 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
+// import { Label } from '@/components/ui/label'
 import { Eye, EyeOff, Package } from 'lucide-react'
+import axiosInstance from '@/config/axiosConfig'
+import { useForm } from 'react-hook-form'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form'
+import { useRouter } from 'next/navigation'
+// import { useToast } from "@/components/hooks/use-toast"
+interface loginRespone {
+  token: string
+  status: boolean
+}
+
+const formSchema = z.object({
+  email: z.string().min(1),
+  password: z.string().min(1)
+})
 
 export default function LoginPage() {
+  const router = useRouter()
+
   const [showPassword, setShowPassword] = useState(false)
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: ''
+    }
+  })
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
+  }
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [, setTokenAccess] = useLocalStorage('token', '')
+  // const { toast } = useToast()
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // e.preventDefault()
+    setIsLoading(true)
+
+    try {
+      const isLoginSuccess = await axiosInstance.post<any, loginRespone>(`/auth/login`, values)
+      console.log(isLoginSuccess)
+
+      if (isLoginSuccess.status) {
+        setTokenAccess(isLoginSuccess.token)
+        router.replace('/')
+      }
+      // toast({
+      //   title: "Đăng nhập thành công",
+      //   description: "Bạn đã đăng nhập thành công.",
+      // })
+      // Ở đây bạn có thể lưu token và chuyển hướng người dùng
+      // console.log('Login successful', response)
+    } catch (error) {
+      // toast({
+      //   title: "Đăng nhập thất bại",
+      //   description: error.message,
+      //   variant: "destructive",
+      // })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -44,42 +111,73 @@ export default function LoginPage() {
                 Vui lòng đăng nhập để tiếp tục
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <form>
-                <div className='space-y-4'>
-                  <div className='space-y-2'>
-                    <Label htmlFor='username'>Tên đăng nhập</Label>
-                    <Input id='username' placeholder='Nhập tên đăng nhập' />
-                  </div>
-                  <div className='space-y-2'>
-                    <Label htmlFor='password'>Mật khẩu</Label>
-                    <div className='relative'>
-                      <Input
-                        id='password'
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder='Nhập mật khẩu'
-                      />
-                      <Button
-                        type='button'
-                        variant='ghost'
-                        size='icon'
-                        className='absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent'
-                        onClick={togglePasswordVisibility}
-                      >
-                        {showPassword ? (
-                          <EyeOff className='h-4 w-4 text-gray-500' />
-                        ) : (
-                          <Eye className='h-4 w-4 text-gray-500' />
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <CardContent>
+                  <div className='space-y-4'>
+                    <div className='space-y-2'>
+                      <FormField
+                        control={form.control}
+                        name='email'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tên đăng nhập</FormLabel>
+                            <FormControl>
+                              <Input placeholder='Nhập Email' {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
                         )}
-                      </Button>
+                      />
+                    </div>
+                    <div className='space-y-2'>
+                      <FormField
+                        control={form.control}
+                        name='password'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Mật khẩu</FormLabel>
+                            <FormControl>
+                              <div className='relative'>
+                                <Input
+                                  type={showPassword ? 'text' : 'password'}
+                                  placeholder='Nhập mật khẩu'
+                                  {...field}
+                                  required
+                                />
+                                <Button
+                                  type='button'
+                                  variant='ghost'
+                                  size='icon'
+                                  className='absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent'
+                                  onClick={togglePasswordVisibility}
+                                >
+                                  {showPassword ? (
+                                    <EyeOff className='h-4 w-4 text-gray-500' />
+                                  ) : (
+                                    <Eye className='h-4 w-4 text-gray-500' />
+                                  )}
+                                </Button>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                   </div>
-                </div>
+                </CardContent>
+                <CardFooter>
+                  <Button
+                    className='w-full bg-blue-600 hover:bg-blue-700'
+                    disabled={isLoading}
+                    type='submit'
+                  >
+                    Đăng nhập
+                  </Button>
+                </CardFooter>
               </form>
-            </CardContent>
-            <CardFooter>
-              <Button className='w-full bg-blue-600 hover:bg-blue-700'>Đăng nhập</Button>
-            </CardFooter>
+            </Form>
           </div>
         </div>
       </Card>
