@@ -55,11 +55,23 @@ const Dashboard = () => {
           <CardContent>
             <div className='text-2xl font-bold'>36,894</div>
             <Button variant='link' className='p-0 h-auto'>
-              Xem tất cả đơn hàng
+              Xem chi tiết
             </Button>
           </CardContent>
         </Card>
 
+        <Card>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+            <div className='text-sm font-medium'>Đơn nhập kho</div>
+            <div className='text-sm font-medium'>+0.00%</div>
+          </CardHeader>
+          <CardContent>
+            <div className='text-2xl font-bold'>36,894</div>
+            <Button variant='link' className='p-0 h-auto'>
+              Xem chi tiết
+            </Button>
+          </CardContent>
+        </Card>
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <div className='text-sm font-medium'>Khách hàng</div>
@@ -69,19 +81,6 @@ const Dashboard = () => {
             <div className='text-2xl font-bold'>183.35M</div>
             <Button variant='link' className='p-0 h-auto'>
               Xem chi tiết
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <div className='text-sm font-medium'>MY BALANCE</div>
-            <div className='text-sm font-medium'>+0.00%</div>
-          </CardHeader>
-          <CardContent>
-            <div className='text-2xl font-bold'>$165.89k</div>
-            <Button variant='link' className='p-0 h-auto'>
-              Withdraw money
             </Button>
           </CardContent>
         </Card>
@@ -115,9 +114,9 @@ const Dashboard = () => {
 
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <div className='text-xl font-bold'>Sales by Locations</div>
+            <div className='text-xl font-bold'>Bán hàng theo tỉnh thành</div>
             <Button variant='outline' size='sm'>
-              Export Report
+              Báo cáo
             </Button>
           </CardHeader>
           <CardContent>
@@ -151,17 +150,18 @@ const Dashboard = () => {
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
         <Card>
           <CardHeader>
-            <div className='text-xl font-bold'>Đơn hàng xuất nhiều nhất</div>
+            <div className='text-xl font-bold'>Sản phẩm xuất kho nhiều nhất</div>
           </CardHeader>
           <CardContent>
             <table className='w-full'>
               <thead>
                 <tr>
-                  <th className='text-left'>Product</th>
-                  <th className='text-left'>Price</th>
-                  <th className='text-left'>Orders</th>
-                  <th className='text-left'>Stock</th>
-                  <th className='text-left'>Amount</th>
+                  <th className='text-left'>STT</th>
+                  <th className='text-left'>Sản phẩm</th>
+                  <th className='text-left'>Số lượng xuất</th>
+                  <th className='text-left'>Số đơn</th>
+                  <th className='text-left'>Tồn kho</th>
+                  <th className='text-left'>Tổng giá</th>
                 </tr>
               </thead>
               <tbody>
@@ -208,17 +208,17 @@ const Dashboard = () => {
 
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <div className='text-xl font-bold'>Top Sellers</div>
-            <Button variant='link'>Report</Button>
+            <div className='text-xl font-bold'>Nhân viên hàng đầu</div>
+            <Button variant='link'>Báo cáo</Button>
           </CardHeader>
           <CardContent>
             <table className='w-full'>
               <thead>
                 <tr>
-                  <th className='text-left'>Sellers</th>
-                  <th className='text-left'>Product</th>
-                  <th className='text-left'>Stock</th>
-                  <th className='text-left'>Amount</th>
+                  <th className='text-left'>STT</th>
+                  <th className='text-left'>Nhân viên</th>
+                  <th className='text-left'>SL đơn</th>
+                  <th className='text-left'>Tổng thu nhập</th>
                 </tr>
               </thead>
               <tbody>

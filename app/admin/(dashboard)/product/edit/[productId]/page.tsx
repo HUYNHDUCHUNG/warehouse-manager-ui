@@ -85,7 +85,7 @@ const EditProduct = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axiosInstance.patch(`/product/${productId}`, values)
-      router.push(`/product`)
+      router.push(`/admin/product`)
     } catch (error) {
       console.error('Error updating product:', error)
     }

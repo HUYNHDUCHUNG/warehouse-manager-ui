@@ -93,7 +93,7 @@ const CreatePurchaseOrder = () => {
     try {
       console.log(values)
       await axiosInstance.post('/purchase-order', values)
-      router.push('/purchase-order')
+      router.push('/admin/purchase-order')
     } catch (error) {
       console.error('Error creating purchase order:', error)
     }
@@ -133,11 +133,11 @@ const CreatePurchaseOrder = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href='/'>Home</BreadcrumbLink>
+                <BreadcrumbLink href='/admin'>Home</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href='/purchase-order'>Quản lý nhập kho</BreadcrumbLink>
+                <BreadcrumbLink href='/admin/purchase-order'>Quản lý nhập kho</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>

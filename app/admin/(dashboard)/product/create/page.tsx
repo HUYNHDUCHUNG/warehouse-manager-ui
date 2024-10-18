@@ -77,7 +77,7 @@ const CreateProduct = () => {
     try {
       await axiosInstance.post('/product', values)
       //   toast.success('Course created')
-      router.push(`/product`)
+      router.push(`/admin/product`)
     } catch (error) {
       //   toast.error('Something Wrong')
     }
@@ -89,11 +89,11 @@ const CreateProduct = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href='/'>Home</BreadcrumbLink>
+                <BreadcrumbLink href='/admin'>Home</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href='/product'>Quản lý sản phẩm</BreadcrumbLink>
+                <BreadcrumbLink href='/admin/product'>Quản lý sản phẩm</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>

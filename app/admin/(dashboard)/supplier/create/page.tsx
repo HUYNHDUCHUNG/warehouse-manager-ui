@@ -58,7 +58,7 @@ const SupplierForm: React.FC<SupplierFormProps> = ({ initialData }) => {
       //     description: 'The supplier has been successfully saved.'
       //   })
 
-      router.push('/supplier')
+      router.push('/admin/supplier')
     } catch (error) {
       console.error('Error saving supplier:', error)
       //   toast({
