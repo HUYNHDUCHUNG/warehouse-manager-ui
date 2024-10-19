@@ -79,7 +79,7 @@ const ProductPage = () => {
       <div className='bg-white min-h-[100vh] p-4 rounded-xl'>
         <div className='flex justify-between mb-4'>
           <h1 className='text-xl font-bold'>Danh sách sản phẩm</h1>
-          <Link href={'/product/create'}>
+          <Link href={'/admin/product/create'}>
             <Button>Thêm sản phẩm</Button>
           </Link>
         </div>

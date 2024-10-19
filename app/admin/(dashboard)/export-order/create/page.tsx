@@ -92,7 +92,7 @@ const CreatePurchaseOrder = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log('value:', values)
-      await axiosInstance.post('/admin/export-order', values)
+      await axiosInstance.post('/export-order', values)
       router.push('/admin/export-order')
     } catch (error) {
       console.error('Error creating purchase order:', error)

@@ -87,7 +87,7 @@ const PurchaseOrderPage = () => {
       <div className='bg-white p-4 rounded-xl'>
         <div className='flex justify-between mb-4'>
           <h1 className='text-xl font-bold'>Danh sách đơn hàng nhập</h1>
-          <Link href={'/purchase-order/create'}>
+          <Link href={'/admin/purchase-order/create'}>
             <Button>Tạo đơn nhập mới</Button>
           </Link>
         </div>

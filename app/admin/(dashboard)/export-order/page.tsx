@@ -87,7 +87,7 @@ const ExportOrderPage = () => {
       <div className='bg-white p-4 rounded-xl'>
         <div className='flex justify-between mb-4'>
           <h1 className='text-xl font-bold'>Danh sách đơn hàng xuất</h1>
-          <Link href={'/export-order/create'}>
+          <Link href={'/admin/export-order/create'}>
             <Button>Tạo đơn xuất mới</Button>
           </Link>
         </div>
