@@ -4,21 +4,24 @@ import { NextResponse, NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
     const token = request.cookies.get('token')?.value
     const role = request.cookies.get('role')?.value
-    // console.log("token:", token)
-    // console.log("role:", role)
-    // Public routes
-    if (request.nextUrl.pathname.startsWith('/login') && token && role === 'AD') {
-        return NextResponse.redirect(new URL('/admin', request.url))
+    // Nếu đã đăng nhập và cố truy cập trang login
+    if (token && request.nextUrl.pathname === '/login') {
+        // Redirect về trang chủ hoặc dashboard tương ứng với role
+        if (role === 'AD') {
+            return NextResponse.redirect(new URL('/admin', request.url))
+        }
+        // Thêm các role khác nếu cần
+        return NextResponse.redirect(new URL('/', request.url))
     }
 
-    // Check authentication
-    if (!token) {
+    // Nếu chưa đăng nhập và truy cập các trang được bảo vệ
+    if (!token && request.nextUrl.pathname !== '/login') {
         return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    // Route protection based on roles
+    // Kiểm tra quyền truy cập các route admin
     if (request.nextUrl.pathname.startsWith('/admin') && role !== 'AD') {
-        return NextResponse.redirect(new URL('/login', request.url))
+        return NextResponse.redirect(new URL('/', request.url))
     }
 
     // if (request.nextUrl.pathname.startsWith('/warehouse') &&

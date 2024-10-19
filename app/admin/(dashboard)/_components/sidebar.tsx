@@ -17,7 +17,7 @@ export const Sidebar = () => {
         <Logo />
       </div>
       <div>
-        <Link href={'/'}>
+        <Link href={'/admin'}>
           <Button className='px-6 py-6 flex items-center gap-x-2 bg-transparent w-full justify-start hover:bg-sky-600 rounded-none shadow-none'>
             <div>
               <LayoutDashboard />
@@ -25,7 +25,7 @@ export const Sidebar = () => {
             <span>Trang chủ</span>
           </Button>
         </Link>
-        <Link href={'/product'}>
+        <Link href={'/admin/product'}>
           <Button className='px-6 py-6 flex items-center gap-x-2 bg-transparent w-full justify-start hover:bg-sky-600 rounded-none shadow-none'>
             <div>
               <PackageSearch />
@@ -33,7 +33,7 @@ export const Sidebar = () => {
             <span>Quản lý sản phẩm</span>
           </Button>
         </Link>
-        <Link href={'/supplier'}>
+        <Link href={'/admin/supplier'}>
           <Button className='px-6 py-6 flex items-center gap-x-2 bg-transparent w-full justify-start hover:bg-sky-600 rounded-none shadow-none'>
             <div>
               <PackageSearch />
@@ -41,7 +41,7 @@ export const Sidebar = () => {
             <span>Quản lý nhà cung cấp</span>
           </Button>
         </Link>
-        <Link href={'/purchase-order'}>
+        <Link href={'/admin/purchase-order'}>
           <Button className='px-6 py-6 flex items-center gap-x-2 bg-transparent w-full justify-start hover:bg-sky-600 rounded-none shadow-none'>
             <div>
               <ListCheck />
@@ -49,7 +49,7 @@ export const Sidebar = () => {
             <span>Quản lý nhập kho</span>
           </Button>
         </Link>
-        <Link href={'/export-order'}>
+        <Link href={'/admin/export-order'}>
           <Button className='px-6 py-6 flex items-center gap-x-2 bg-transparent w-full justify-start hover:bg-sky-600 rounded-none shadow-none'>
             <div>
               <BaggageClaim />
@@ -57,7 +57,7 @@ export const Sidebar = () => {
             <span>Quản lý xuất kho</span>
           </Button>
         </Link>
-        <Link href={'/product'}>
+        <Link href={'/admin/product'}>
           <Button className='px-6 py-6 flex items-center gap-x-2 bg-transparent w-full justify-start hover:bg-sky-600 rounded-none shadow-none'>
             <div>
               <ChartArea />
@@ -65,7 +65,7 @@ export const Sidebar = () => {
             <span>Thống kê báo cáo</span>
           </Button>
         </Link>
-        <Link href={'/product'}>
+        <Link href={'/admin/product'}>
           <Button className='px-6 py-6 flex items-center gap-x-2 bg-transparent w-full justify-start hover:bg-sky-600 rounded-none shadow-none'>
             <div>
               <User />
