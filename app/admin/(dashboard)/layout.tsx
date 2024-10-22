@@ -1,5 +1,5 @@
 import { Navbar } from './_components/navbar'
-import { Sidebar } from './_components/sidebar'
+import Sidebar from './_components/sidebar'
 const Dashboard = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className='h-full'>

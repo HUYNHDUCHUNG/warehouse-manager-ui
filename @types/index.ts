@@ -37,6 +37,7 @@ export interface PurchaseOrder {
     note?: string;
     supplier: Supplier;
     purchaseOrderDetails: PurchaseOrderDetail[];
+    user: User;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -62,7 +63,8 @@ export interface ExportOrder {
     exportOrderDetails: ExportOrderDetail[];
     isFullyAvailable: boolean;
     customer: Customer;
-    statusOrder: boolean;
+    status: boolean;
+    user: User;
     createdAt: string;
     updatedAt: string;
 
@@ -90,3 +92,61 @@ export interface Customer {
     phone: string;
 
 }
+
+export interface User {
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+    contract: string;
+
+}
+
+
+export interface Incom {
+    success: boolean;
+    current_month: {
+        year: number;
+        month: number;
+        income: number;
+        formatted_income: string;
+    };
+    previous_month: {
+        year: number;
+        month: number;
+        income: number;
+        formatted_income: string;
+    };
+    growth_rate: string; // Nếu là chuỗi số, có thể để dạng string
+    growth_direction: 'increase' | 'decrease'; // Giới hạn giá trị cho hướng tăng hoặc giảm
+};
+export interface AnalyticOrder {
+    success: boolean;
+    current_month: {
+        year: number;
+        month: number;
+        total_orders: string;
+        formatted_total: string;
+        completed_orders: string;
+        pending_orders: string;
+        completion_rate: string;
+    };
+    previous_month: {
+        year: number;
+        month: number;
+        total_orders: string;
+        formatted_total: string;
+    };
+    growth_rate: string;
+    growth_direction: 'increase' | 'decrease';
+}
+
+export interface InventoryReport {
+    product_name: string;          // Tên hàng hóa
+    unit: string;                  // Đơn vị tính
+    beginning_inventory: number;   // Tồn đầu kỳ
+    quantity_imported: number;     // Số lượng nhập
+    quantity_exported: number;     // Số lượng xuất
+    ending_inventory: number;      // Tồn cuối kỳ
+    inventory_value: number;       // Giá trị tồn kho
+};

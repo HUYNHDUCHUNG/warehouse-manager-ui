@@ -61,6 +61,15 @@ const ExportOrderPage = () => {
     }
   }
 
+  const onComfirm = async (id: number) => {
+    try {
+      window.open(`/invoice/export-order/${id}`, '_blank')
+      await axiosInstance.patch(`/export-order/${id}`)
+    } catch (error) {
+      console.error('Error update purchase:', error)
+    }
+  }
+
   return (
     <div>
       <div>
@@ -142,18 +151,16 @@ const ExportOrderPage = () => {
                     />
 
                     {exportOrder?.id && (
-                      <Link href={`/export-order/detail/${exportOrder.id}`}>
+                      <Link href={`/admin/export-order/detail/${exportOrder.id}`}>
                         <Button className='bg-sky-600 hover:bg-sky-500'>Detail</Button>
                       </Link>
                     )}
-                    {exportOrder.isFullyAvailable && (
+                    {exportOrder.isFullyAvailable && !exportOrder.status && (
                       <Button
-                        onClick={() =>
-                          window.open(`/invoice/export-order/${exportOrder.id}`, '_blank')
-                        }
+                        onClick={() => onComfirm(exportOrder.id)}
                         className='bg-sky-600 hover:bg-sky-500'
                       >
-                        Invoice
+                        Xác nhận
                       </Button>
                     )}
                   </TableCell>

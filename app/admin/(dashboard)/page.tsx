@@ -1,13 +1,19 @@
-import React from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+'use client'
+import React, { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Shirt, Coffee, Sofa, ChartPie } from 'lucide-react'
 import dynamic from 'next/dynamic'
+import { AnalyticOrder, Incom } from '@/@types'
+import axiosInstance from '@/config/axiosConfig'
+import { ItemCard } from './_components/item-card'
 // import DynamicChart from './_components/dynamic-chart'
 const DynamicChart = dynamic(() => import('./_components/dynamic-chart'), {
   ssr: false,
   loading: () => <div className='h-[300px] flex items-center justify-center'>Loading chart...</div>
 })
+
 const data = [
   { name: 'Jan', Orders: 90, Earnings: 80, Refunds: 10 },
   { name: 'Feb', Orders: 95, Earnings: 100, Refunds: 5 },
@@ -24,6 +30,21 @@ const data = [
 ]
 
 const Dashboard = () => {
+  const [incom, setIncom] = useState<Incom>()
+  const [order, setOrder] = useState<AnalyticOrder>()
+  useEffect(() => {
+    const getIcom = async () => {
+      try {
+        const dataIcom = await axiosInstance.get<any, Incom>('/analytic/incom')
+        const dataOrder = await axiosInstance.get<any, AnalyticOrder>('/analytic/order')
+        setIncom(dataIcom)
+        setOrder(dataOrder)
+      } catch (error) {
+        console.error('Error fetching purchase orders:', error)
+      }
+    }
+    getIcom()
+  }, [])
   return (
     <div className='p-6 bg-gray-100 min-h-screen'>
       <div className='flex justify-between items-center mb-6'>
@@ -34,31 +55,18 @@ const Dashboard = () => {
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6'>
-        <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <div className='text-sm font-medium'>Tổng thu nhập</div>
-            <div className='text-sm font-medium text-green-500'>+16.24%</div>
-          </CardHeader>
-          <CardContent>
-            <div className='text-2xl font-bold'>$559.25k</div>
-            <Button variant='link' className='p-0 h-auto'>
-              Xem thu nhập ròng
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <div className='text-sm font-medium'>Đơn hàng</div>
-            <div className='text-sm font-medium text-red-500'>-3.57%</div>
-          </CardHeader>
-          <CardContent>
-            <div className='text-2xl font-bold'>36,894</div>
-            <Button variant='link' className='p-0 h-auto'>
-              Xem chi tiết
-            </Button>
-          </CardContent>
-        </Card>
+        <ItemCard
+          label={'Tổng thu nhập'}
+          growth_rate={incom?.growth_rate || ''}
+          growth_direction={incom?.growth_direction || 'increase'}
+          value={incom?.current_month.formatted_income || '0'}
+        />
+        <ItemCard
+          label={'Đơn hàng'}
+          growth_rate={order?.growth_rate || ''}
+          growth_direction={order?.growth_direction || 'increase'}
+          value={order?.current_month.total_orders || '0'}
+        />
 
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
@@ -78,7 +86,7 @@ const Dashboard = () => {
             <div className='text-sm font-medium text-green-500'>+29.08%</div>
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>183.35M</div>
+            <div className='text-2xl font-bold'>183</div>
             <Button variant='link' className='p-0 h-auto'>
               Xem chi tiết
             </Button>
