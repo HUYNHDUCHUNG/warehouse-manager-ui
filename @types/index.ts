@@ -141,6 +141,42 @@ export interface AnalyticOrder {
     growth_direction: 'increase' | 'decrease';
 }
 
+export interface MonthlyOrders {
+    year: number;
+    month: number;
+    total_orders: string;
+    formatted_total: string;
+    completed_orders?: number;
+    pending_orders?: number;
+    completion_rate?: string;
+}
+
+export interface PurchaseOrdersData {
+    success: boolean;
+    current_month: MonthlyOrders;
+    previous_month: MonthlyOrders;
+    growth_rate: string;
+    growth_direction: 'increase' | 'decrease';
+}
+
+
+export interface MonthlyCustomers {
+    year: number;
+    month: number;
+    new_customers: string;
+    formatted_new_customers: string;
+}
+
+export interface AnalyticCustomers {
+    success: boolean;
+    current_month: MonthlyCustomers;
+    previous_month: MonthlyCustomers;
+    total_customers: number;
+    formatted_total: string;
+    growth_rate: string;
+    growth_direction: 'increase' | 'decrease' | 'stable';
+}
+
 export interface InventoryReport {
     product_name: string;          // Tên hàng hóa
     unit: string;                  // Đơn vị tính

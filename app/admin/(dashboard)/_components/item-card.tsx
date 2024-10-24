@@ -46,7 +46,9 @@ export const ItemCard = ({ label, growth_rate, growth_direction, value }: ItemCa
         <div className='text-sm font-medium'>{label}</div>
         <div
           className={`text-sm font-medium ${
-            growth_direction == 'increase' ? 'text-green-500' : 'text-red-500'
+            growth_direction == 'increase'
+              ? 'text-green-500'
+              : `${growth_direction == 'stable' ? 'text-black' : 'text-red-500'}`
           }`}
         >
           {growth_rate}%

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Shirt, Coffee, Sofa, ChartPie } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import { AnalyticOrder, Incom } from '@/@types'
+import { AnalyticCustomers, AnalyticOrder, Incom, PurchaseOrdersData } from '@/@types'
 import axiosInstance from '@/config/axiosConfig'
 import { ItemCard } from './_components/item-card'
 // import DynamicChart from './_components/dynamic-chart'
@@ -32,13 +32,22 @@ const data = [
 const Dashboard = () => {
   const [incom, setIncom] = useState<Incom>()
   const [order, setOrder] = useState<AnalyticOrder>()
+  const [purchaeOrder, setPurchaseOrder] = useState<PurchaseOrdersData>()
+  const [customer, setCustomer] = useState<AnalyticCustomers>()
   useEffect(() => {
     const getIcom = async () => {
       try {
         const dataIcom = await axiosInstance.get<any, Incom>('/analytic/incom')
         const dataOrder = await axiosInstance.get<any, AnalyticOrder>('/analytic/order')
+        const dataPurchaseOrder = await axiosInstance.get<any, PurchaseOrdersData>(
+          '/analytic/purchase-order'
+        )
+        const dataCustomer = await axiosInstance.get<any, AnalyticCustomers>('/analytic/customer')
+
         setIncom(dataIcom)
         setOrder(dataOrder)
+        setPurchaseOrder(dataPurchaseOrder)
+        setCustomer(dataCustomer)
       } catch (error) {
         console.error('Error fetching purchase orders:', error)
       }
@@ -67,20 +76,20 @@ const Dashboard = () => {
           growth_direction={order?.growth_direction || 'increase'}
           value={order?.current_month.total_orders || '0'}
         />
+        <ItemCard
+          label={'Nhập kho'}
+          growth_rate={purchaeOrder?.growth_rate || ''}
+          growth_direction={purchaeOrder?.growth_direction || 'increase'}
+          value={purchaeOrder?.current_month.total_orders || '0'}
+        />
+        <ItemCard
+          label={'Khách hàng'}
+          growth_rate={customer?.growth_rate || '0'}
+          growth_direction={customer?.growth_direction || 'increase'}
+          value={customer?.current_month.new_customers || '0'}
+        />
 
-        <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <div className='text-sm font-medium'>Đơn nhập kho</div>
-            <div className='text-sm font-medium'>+0.00%</div>
-          </CardHeader>
-          <CardContent>
-            <div className='text-2xl font-bold'>36,894</div>
-            <Button variant='link' className='p-0 h-auto'>
-              Xem chi tiết
-            </Button>
-          </CardContent>
-        </Card>
-        <Card>
+        {/* <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <div className='text-sm font-medium'>Khách hàng</div>
             <div className='text-sm font-medium text-green-500'>+29.08%</div>
@@ -91,7 +100,7 @@ const Dashboard = () => {
               Xem chi tiết
             </Button>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6'>
