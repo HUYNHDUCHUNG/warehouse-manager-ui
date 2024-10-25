@@ -9,9 +9,7 @@ const Dashboard = ({ children }: { children: React.ReactNode }) => {
       <div className='h-[56px] w-[calc(100%-14rem)] ms-56'>
         <Navbar />
       </div>
-      <main className='h-[100vh] w-[calc(100%-14rem)] ms-56 px-4 py-6 bg-[#f3f3f9]'>
-        {children}
-      </main>
+      <main className='h-full w-[calc(100%-14rem)] ms-56 px-4 py-6 bg-[#f3f3f9]'>{children}</main>
     </div>
   )
 }

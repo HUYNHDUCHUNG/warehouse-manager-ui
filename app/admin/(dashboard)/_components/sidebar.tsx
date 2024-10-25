@@ -14,7 +14,8 @@ import {
   ListCheck,
   BaggageClaim,
   Settings,
-  Minus
+  Minus,
+  User
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -183,6 +184,12 @@ export default function Sidebar() {
       hasSubmenu: false
     },
     {
+      icon: <User className='w-4 h-4' />,
+      label: 'Quản lý khách hàng',
+      href: '/admin/customer',
+      hasSubmenu: false
+    },
+    {
       icon: <Layout className='w-4 h-4' />,
       label: 'Layouts',
       href: '/admin/layouts',
@@ -211,7 +218,7 @@ export default function Sidebar() {
 
   // Check if a submenu item is active
   const isSubmenuItemActive = (subItems: SubMenuItem[] = []) => {
-    return subItems.some(item => pathname === item.href)
+    return subItems.some((item) => pathname === item.href)
   }
 
   return (
