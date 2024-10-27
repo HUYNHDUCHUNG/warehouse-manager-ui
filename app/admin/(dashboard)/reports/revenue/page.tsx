@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -18,42 +19,88 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
+import axiosInstance from '@/config/axiosConfig'
+
+// Define interfaces for type safety
+interface OverallStats {
+  totalOrders: number
+  totalRevenue: number
+  completedOrders: number
+  completionRate: number
+  revenueGrowth: number
+  orderGrowth: number
+}
+
+interface ChartDataPoint {
+  name: string
+  'Doanh thu': number
+}
+
+interface EmployeeData {
+  id: number
+  name: string
+  totalOrders: number
+  totalRevenue: number
+  completedOrders: number
+  pendingOrders: number
+}
 
 export default function Revenue() {
-  // Demo data
-  const employeeData = [
-    {
-      id: 1,
-      name: 'Nguyễn Văn A',
-      totalOrders: 150,
-      totalRevenue: 45000000,
-      completedOrders: 142,
-      pendingOrders: 8
-    },
-    {
-      id: 2,
-      name: 'Trần Thị B',
-      totalOrders: 180,
-      totalRevenue: 52000000,
-      completedOrders: 175,
-      pendingOrders: 5
-    },
-    {
-      id: 3,
-      name: 'Lê Văn C',
-      totalOrders: 120,
-      totalRevenue: 38000000,
-      completedOrders: 115,
-      pendingOrders: 5
-    }
-  ]
+  const [timeRange, setTimeRange] = useState<string>('thisMonth')
+  const [overallStats, setOverallStats] = useState<OverallStats>({
+    totalOrders: 0,
+    totalRevenue: 0,
+    completedOrders: 0,
+    completionRate: 0,
+    revenueGrowth: 0,
+    orderGrowth: 0
+  })
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([])
+  const [employeeData, setEmployeeData] = useState<EmployeeData[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
 
-  const chartData = [
-    { name: 'T1', 'Nguyễn Văn A': 35, 'Trần Thị B': 42, 'Lê Văn C': 28 },
-    { name: 'T2', 'Nguyễn Văn A': 38, 'Trần Thị B': 48, 'Lê Văn C': 32 },
-    { name: 'T3', 'Nguyễn Văn A': 42, 'Trần Thị B': 45, 'Lê Văn C': 30 },
-    { name: 'T4', 'Nguyễn Văn A': 35, 'Trần Thị B': 45, 'Lê Văn C': 30 }
-  ]
+  // Fetch data function
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+
+      // Fetch overall stats
+      const statsData = await axiosInstance.get<any, OverallStats>(
+        `/report/stats?timeRange=${timeRange}`
+      )
+
+      // Fetch monthly revenue
+      const monthlyData = await axiosInstance.get<any, ChartDataPoint[]>('/report/monthly')
+
+      // Fetch employee stats
+      const employeeResponse = await axiosInstance.get<any, EmployeeData[]>(
+        `/report/employees?timeRange=${timeRange}`
+      )
+
+      setOverallStats(statsData)
+      setChartData(monthlyData)
+      setEmployeeData(employeeResponse)
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      // Có thể thêm xử lý toast thông báo lỗi ở đây
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Fetch data on component mount and timeRange change
+  useEffect(() => {
+    fetchData()
+  }, [timeRange])
+
+  // Handle time range change
+  const handleTimeRangeChange = (value: string) => {
+    setTimeRange(value)
+  }
+
+  if (loading) {
+    return <div className='p-6'>Loading...</div>
+  }
 
   return (
     <div className='p-6 space-y-6'>
@@ -61,7 +108,7 @@ export default function Revenue() {
       <div className='flex justify-between items-center'>
         <h1 className='text-3xl font-bold'>Thống Kê Doanh Thu</h1>
         <div className='flex gap-4'>
-          <Select defaultValue='thisMonth'>
+          <Select value={timeRange} onValueChange={handleTimeRangeChange}>
             <SelectTrigger className='w-[180px]'>
               <SelectValue placeholder='Chọn thời gian' />
             </SelectTrigger>
@@ -81,8 +128,13 @@ export default function Revenue() {
             <CardTitle>Tổng Đơn Hàng</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className='text-3xl font-bold'>450</p>
-            <p className='text-sm text-gray-500'>+12% so với tháng trước</p>
+            <p className='text-3xl font-bold'>{overallStats.totalOrders}</p>
+            {timeRange === 'thisMonth' && (
+              <p className='text-sm text-gray-500'>
+                {overallStats.orderGrowth > 0 ? '+' : ''}
+                {overallStats.orderGrowth}% so với tháng trước
+              </p>
+            )}
           </CardContent>
         </Card>
 
@@ -91,8 +143,13 @@ export default function Revenue() {
             <CardTitle>Tổng Doanh Thu</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className='text-3xl font-bold'>135.000.000đ</p>
-            <p className='text-sm text-gray-500'>+8% so với tháng trước</p>
+            <p className='text-3xl font-bold'>{overallStats.totalRevenue.toLocaleString()}đ</p>
+            {timeRange === 'thisMonth' && (
+              <p className='text-sm text-gray-500'>
+                {overallStats.revenueGrowth > 0 ? '+' : ''}
+                {overallStats.revenueGrowth}% so với tháng trước
+              </p>
+            )}
           </CardContent>
         </Card>
 
@@ -101,8 +158,10 @@ export default function Revenue() {
             <CardTitle>Đơn Hàng Hoàn Thành</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className='text-3xl font-bold'>432</p>
-            <p className='text-sm text-gray-500'>Tỷ lệ hoàn thành: 96%</p>
+            <p className='text-3xl font-bold'>{overallStats.completedOrders}</p>
+            <p className='text-sm text-gray-500'>
+              Tỷ lệ hoàn thành: {overallStats.completionRate}%
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -123,11 +182,9 @@ export default function Revenue() {
               <CartesianGrid strokeDasharray='3 3' />
               <XAxis dataKey='name' />
               <YAxis />
-              <Tooltip />
+              <Tooltip formatter={(value: number) => `${value.toLocaleString()}đ`} />
               <Legend />
-              <Line type='monotone' dataKey='Nguyễn Văn A' stroke='#8884d8' />
-              <Line type='monotone' dataKey='Trần Thị B' stroke='#82ca9d' />
-              <Line type='monotone' dataKey='Lê Văn C' stroke='#ffc658' />
+              <Line type='monotone' dataKey='Doanh thu' stroke='#8884d8' />
             </LineChart>
           </div>
         </CardContent>
