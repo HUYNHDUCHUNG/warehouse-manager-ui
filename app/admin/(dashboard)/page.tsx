@@ -3,11 +3,11 @@
 import React, { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Shirt, Coffee, Sofa, ChartPie } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { AnalyticCustomers, AnalyticOrder, Incom, PurchaseOrdersData } from '@/@types'
 import axiosInstance from '@/config/axiosConfig'
 import { ItemCard } from './_components/item-card'
+import TopProductsTable from './_components/top-products'
 // import DynamicChart from './_components/dynamic-chart'
 const DynamicChart = dynamic(() => import('./_components/dynamic-chart'), {
   ssr: false,
@@ -88,19 +88,6 @@ const Dashboard = () => {
           growth_direction={customer?.growth_direction || 'increase'}
           value={customer?.current_month.new_customers || '0'}
         />
-
-        {/* <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <div className='text-sm font-medium'>Khách hàng</div>
-            <div className='text-sm font-medium text-green-500'>+29.08%</div>
-          </CardHeader>
-          <CardContent>
-            <div className='text-2xl font-bold'>183</div>
-            <Button variant='link' className='p-0 h-auto'>
-              Xem chi tiết
-            </Button>
-          </CardContent>
-        </Card> */}
       </div>
 
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6'>
@@ -165,7 +152,7 @@ const Dashboard = () => {
       </div>
 
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-        <Card>
+        {/* <Card>
           <CardHeader>
             <div className='text-xl font-bold'>Sản phẩm xuất kho nhiều nhất</div>
           </CardHeader>
@@ -183,45 +170,31 @@ const Dashboard = () => {
               </thead>
               <tbody>
                 <tr>
-                  <td className='py-2 flex items-center'>
-                    <Shirt className='mr-2' /> Branded T-Shirts
-                  </td>
+                  <td className='py-2 flex items-center'>Branded T-Shirts</td>
                   <td>$29.00</td>
                   <td>62</td>
                   <td>510</td>
                   <td>$1,798</td>
                 </tr>
                 <tr>
-                  <td className='py-2 flex items-center'>
-                    <ChartPie className='mr-2' /> Bentwood Chair
-                  </td>
+                  <td className='py-2 flex items-center'>Bentwood Chair</td>
                   <td>$85.20</td>
                   <td>35</td>
                   <td className='text-red-500'>Out of stock</td>
                   <td>$2,982</td>
                 </tr>
                 <tr>
-                  <td className='py-2 flex items-center'>
-                    <Coffee className='mr-2' /> Borosil Paper Cup
-                  </td>
+                  <td className='py-2 flex items-center'>Borosil Paper Cup</td>
                   <td>$14.00</td>
                   <td>80</td>
                   <td>749</td>
                   <td>$1,120</td>
                 </tr>
-                <tr>
-                  <td className='py-2 flex items-center'>
-                    <Sofa className='mr-2' /> One Seater Sofa
-                  </td>
-                  <td>$127.50</td>
-                  <td>56</td>
-                  <td className='text-red-500'>Out of stock</td>
-                  <td>$7,140</td>
-                </tr>
               </tbody>
             </table>
           </CardContent>
-        </Card>
+        </Card> */}
+        <TopProductsTable />
 
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
@@ -240,28 +213,10 @@ const Dashboard = () => {
               </thead>
               <tbody>
                 <tr>
-                  <td className='py-2'>iTest Factory</td>
-                  <td>Bags and Wallets</td>
-                  <td>8547</td>
-                  <td>$541200</td>
-                </tr>
-                <tr>
-                  <td className='py-2'>Digitech Galaxy</td>
-                  <td>Watches</td>
-                  <td>895</td>
-                  <td>$75030</td>
-                </tr>
-                <tr>
-                  <td className='py-2'>Nesta Technologies</td>
-                  <td>Bike Accessories</td>
-                  <td>3470</td>
-                  <td>$45600</td>
-                </tr>
-                <tr>
-                  <td className='py-2'>Zoetic Fashion</td>
-                  <td>Clothes</td>
-                  <td>5488</td>
-                  <td>$29456</td>
+                  <td className='py-2'>1</td>
+                  <td>Nguyễn văn a</td>
+                  <td>857</td>
+                  <td>100.000.000đ</td>
                 </tr>
               </tbody>
             </table>
