@@ -8,26 +8,27 @@ import { AnalyticCustomers, AnalyticOrder, Incom, PurchaseOrdersData } from '@/@
 import axiosInstance from '@/config/axiosConfig'
 import { ItemCard } from './_components/item-card'
 import TopProductsTable from './_components/top-products'
+import EmployeeTable from './_components/top-employee'
 // import DynamicChart from './_components/dynamic-chart'
 const DynamicChart = dynamic(() => import('./_components/dynamic-chart'), {
   ssr: false,
   loading: () => <div className='h-[300px] flex items-center justify-center'>Loading chart...</div>
 })
 
-const data = [
-  { name: 'Jan', Orders: 90, Earnings: 80, Refunds: 10 },
-  { name: 'Feb', Orders: 95, Earnings: 100, Refunds: 5 },
-  { name: 'Mar', Orders: 100, Earnings: 110, Refunds: 8 },
-  { name: 'Apr', Orders: 80, Earnings: 75, Refunds: 25 },
-  { name: 'May', Orders: 85, Earnings: 90, Refunds: 20 },
-  { name: 'Jun', Orders: 70, Earnings: 85, Refunds: 15 },
-  { name: 'Jul', Orders: 75, Earnings: 90, Refunds: 5 },
-  { name: 'Aug', Orders: 85, Earnings: 100, Refunds: 10 },
-  { name: 'Sep', Orders: 90, Earnings: 90, Refunds: 8 },
-  { name: 'Oct', Orders: 95, Earnings: 105, Refunds: 22 },
-  { name: 'Nov', Orders: 100, Earnings: 110, Refunds: 25 },
-  { name: 'Dec', Orders: 110, Earnings: 120, Refunds: 30 }
-]
+// const data = [
+//   { name: 'T1', Orders: 90, ExportOrders: 80 },
+//   { name: 'T2', Orders: 95, ExportOrders: 100 },
+//   { name: 'T3', Orders: 100, ExportOrders: 110 },
+//   { name: 'T4', Orders: 80, ExportOrders: 75 },
+//   { name: 'T5', Orders: 85, ExportOrders: 90 },
+//   { name: 'T6', Orders: 70, ExportOrders: 85 },
+//   { name: 'T7', Orders: 75, ExportOrders: 90 },
+//   { name: 'T8', Orders: 85, ExportOrders: 100 },
+//   { name: 'T9', Orders: 90, ExportOrders: 90 },
+//   { name: 'T10', Orders: 95, ExportOrders: 105 },
+//   { name: 'T11', Orders: 100, ExportOrders: 110 },
+//   { name: 'T12', Orders: 110, ExportOrders: 120 }
+// ]
 
 const Dashboard = () => {
   const [incom, setIncom] = useState<Incom>()
@@ -111,12 +112,12 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className='h-[300px]'>
-              <DynamicChart data={data} />
+              <DynamicChart />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <div className='text-xl font-bold'>Bán hàng theo tỉnh thành</div>
             <Button variant='outline' size='sm'>
@@ -148,80 +149,12 @@ const Dashboard = () => {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-        {/* <Card>
-          <CardHeader>
-            <div className='text-xl font-bold'>Sản phẩm xuất kho nhiều nhất</div>
-          </CardHeader>
-          <CardContent>
-            <table className='w-full'>
-              <thead>
-                <tr>
-                  <th className='text-left'>STT</th>
-                  <th className='text-left'>Sản phẩm</th>
-                  <th className='text-left'>Số lượng xuất</th>
-                  <th className='text-left'>Số đơn</th>
-                  <th className='text-left'>Tồn kho</th>
-                  <th className='text-left'>Tổng giá</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className='py-2 flex items-center'>Branded T-Shirts</td>
-                  <td>$29.00</td>
-                  <td>62</td>
-                  <td>510</td>
-                  <td>$1,798</td>
-                </tr>
-                <tr>
-                  <td className='py-2 flex items-center'>Bentwood Chair</td>
-                  <td>$85.20</td>
-                  <td>35</td>
-                  <td className='text-red-500'>Out of stock</td>
-                  <td>$2,982</td>
-                </tr>
-                <tr>
-                  <td className='py-2 flex items-center'>Borosil Paper Cup</td>
-                  <td>$14.00</td>
-                  <td>80</td>
-                  <td>749</td>
-                  <td>$1,120</td>
-                </tr>
-              </tbody>
-            </table>
-          </CardContent>
-        </Card> */}
         <TopProductsTable />
-
-        <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <div className='text-xl font-bold'>Nhân viên hàng đầu</div>
-            <Button variant='link'>Báo cáo</Button>
-          </CardHeader>
-          <CardContent>
-            <table className='w-full'>
-              <thead>
-                <tr>
-                  <th className='text-left'>STT</th>
-                  <th className='text-left'>Nhân viên</th>
-                  <th className='text-left'>SL đơn</th>
-                  <th className='text-left'>Tổng thu nhập</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className='py-2'>1</td>
-                  <td>Nguyễn văn a</td>
-                  <td>857</td>
-                  <td>100.000.000đ</td>
-                </tr>
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
+        <EmployeeTable />
       </div>
     </div>
   )
