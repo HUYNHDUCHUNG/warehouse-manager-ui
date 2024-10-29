@@ -30,7 +30,7 @@ import { Search, Plus, Pencil, Trash2 } from 'lucide-react'
 import { Label } from '@/components/ui/label'
 
 export default function UserManagement() {
-  // State for users data
+  // Previous state declarations remain the same
   const [users, setUsers] = useState([
     {
       id: 1,
@@ -52,13 +52,10 @@ export default function UserManagement() {
     }
   ])
 
-  // State for dialogs
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
-
-  // Form state
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -68,7 +65,7 @@ export default function UserManagement() {
     status: 'active'
   })
 
-  // Handle add user
+  // Previous handlers remain the same
   const handleAdd = (e) => {
     e.preventDefault()
     const newUser = {
@@ -87,14 +84,12 @@ export default function UserManagement() {
     setIsAddOpen(false)
   }
 
-  // Handle edit user
   const handleEdit = (user) => {
     setSelectedUser(user)
     setFormData(user)
     setIsEditOpen(true)
   }
 
-  // Handle update user
   const handleUpdate = (e) => {
     e.preventDefault()
     const updatedUsers = users.map((user) => (user.id === selectedUser.id ? { ...formData } : user))
@@ -102,20 +97,21 @@ export default function UserManagement() {
     setIsEditOpen(false)
   }
 
-  // Handle delete user
   const handleDelete = (userId) => {
     if (confirm('Bạn có chắc muốn xóa người dùng này?')) {
       setUsers(users.filter((user) => user.id !== userId))
     }
   }
 
-  // Filter users based on search
   const filteredUsers = users.filter(
     (user) =>
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.department.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  // Custom dialog content style to ensure white background
+  const dialogContentClass = 'sm:max-w-[425px] bg-white'
 
   return (
     <div className='p-6 space-y-6'>
@@ -129,7 +125,7 @@ export default function UserManagement() {
                 Thêm người dùng
               </Button>
             </DialogTrigger>
-            <DialogContent className='sm:max-w-[425px]'>
+            <DialogContent className={dialogContentClass}>
               <DialogHeader>
                 <DialogTitle>Thêm Người Dùng Mới</DialogTitle>
               </DialogHeader>
@@ -165,7 +161,7 @@ export default function UserManagement() {
                     value={formData.role}
                     onValueChange={(value) => setFormData({ ...formData, role: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className='bg-white'>
                       <SelectValue placeholder='Chọn vai trò' />
                     </SelectTrigger>
                     <SelectContent>
@@ -180,7 +176,7 @@ export default function UserManagement() {
                     value={formData.department}
                     onValueChange={(value) => setFormData({ ...formData, department: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className='bg-white'>
                       <SelectValue placeholder='Chọn phòng ban' />
                     </SelectTrigger>
                     <SelectContent>
@@ -270,11 +266,11 @@ export default function UserManagement() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className='sm:max-w-[425px]'>
+        <DialogContent className={dialogContentClass}>
           <DialogHeader>
             <DialogTitle>Chỉnh Sửa Người Dùng</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleUpdate} className='space-y-'>
+          <form onSubmit={handleUpdate} className='space-y-4'>
             <div className='space-y-2'>
               <Label>Họ tên</Label>
               <Input
@@ -306,7 +302,7 @@ export default function UserManagement() {
                 value={formData.role}
                 onValueChange={(value) => setFormData({ ...formData, role: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className='bg-white'>
                   <SelectValue placeholder='Chọn vai trò' />
                 </SelectTrigger>
                 <SelectContent>
@@ -321,7 +317,7 @@ export default function UserManagement() {
                 value={formData.department}
                 onValueChange={(value) => setFormData({ ...formData, department: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className='bg-white'>
                   <SelectValue placeholder='Chọn phòng ban' />
                 </SelectTrigger>
                 <SelectContent>
@@ -338,7 +334,7 @@ export default function UserManagement() {
                 value={formData.status}
                 onValueChange={(value) => setFormData({ ...formData, status: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className='bg-white'>
                   <SelectValue placeholder='Chọn trạng thái' />
                 </SelectTrigger>
                 <SelectContent>

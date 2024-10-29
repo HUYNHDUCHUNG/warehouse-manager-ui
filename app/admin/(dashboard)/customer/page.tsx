@@ -137,7 +137,7 @@ export default function CustomerManagement() {
       customer.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(searchTerm.toLowerCase())
   )
-
+  const dialogContentClass = 'sm:max-w-[425px] bg-white'
   return (
     <div className='p-6 space-y-6'>
       <Card>
@@ -165,7 +165,7 @@ export default function CustomerManagement() {
                   Thêm khách hàng
                 </Button>
               </DialogTrigger>
-              <DialogContent className='sm:max-w-[425px]'>
+              <DialogContent className={dialogContentClass}>
                 <DialogHeader>
                   <DialogTitle>Thêm Khách Hàng Mới</DialogTitle>
                 </DialogHeader>
@@ -354,7 +354,7 @@ export default function CustomerManagement() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className='sm:max-w-[425px]'>
+        <DialogContent className={dialogContentClass}>
           <DialogHeader>
             <DialogTitle>Chỉnh Sửa Khách Hàng</DialogTitle>
           </DialogHeader>
