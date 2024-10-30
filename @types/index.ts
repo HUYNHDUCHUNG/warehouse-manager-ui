@@ -85,21 +85,25 @@ export interface ExportOrderDetail {
 }
 
 export interface Customer {
-    id: number;
+    id: string;
     fullName: string;
     contract: string;
+    rolte: string;
     email: string;
     phone: string;
+    type: 'corporate' | 'individual';
 
 }
 
 export interface User {
+    id: string;
     firstName: string;
     lastName: string;
     email: string;
+    phone: string;
     role: string;
     contract: string;
-
+    status: boolean;
 }
 
 

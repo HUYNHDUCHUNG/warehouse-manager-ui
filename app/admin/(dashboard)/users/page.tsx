@@ -1,6 +1,5 @@
 'use client'
-
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Table,
   TableBody,
@@ -26,91 +25,54 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Search, Plus, Pencil, Trash2 } from 'lucide-react'
+import { Search, Plus, Pencil } from 'lucide-react'
 import { Label } from '@/components/ui/label'
+import { User } from '@/@types'
+import axiosInstance from '@/config/axiosConfig'
+import { UserDialog } from './_components/dialog'
 
 export default function UserManagement() {
-  // Previous state declarations remain the same
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: 'Nguyễn Văn A',
-      email: 'vana@gmail.com',
-      phone: '0123456789',
-      role: 'admin',
-      department: 'IT',
-      status: 'active'
-    },
-    {
-      id: 2,
-      name: 'Trần Thị B',
-      email: 'thib@gmail.com',
-      phone: '0987654321',
-      role: 'user',
-      department: 'Sales',
-      status: 'active'
-    }
-  ])
-
+  const [users, setUsers] = useState<User[]>([])
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
-  const [selectedUser, setSelectedUser] = useState(null)
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    role: '',
-    department: '',
-    status: 'active'
-  })
 
-  // Previous handlers remain the same
-  const handleAdd = (e) => {
-    e.preventDefault()
-    const newUser = {
-      id: users.length + 1,
-      ...formData
+  useEffect(() => {
+    const getUsers = async () => {
+      try {
+        const data = await axiosInstance.get<User[]>('/user')
+        setUsers(data.rows)
+      } catch (error) {
+        console.error('Error fetching users:', error)
+      }
     }
-    setUsers([...users, newUser])
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      role: '',
-      department: '',
-      status: 'active'
-    })
+    getUsers()
+  }, [])
+
+  const handleAdd = (user: User) => {
+    setUsers([...users, user])
     setIsAddOpen(false)
   }
 
-  const handleEdit = (user) => {
+  const handleEdit = (user: User) => {
     setSelectedUser(user)
-    setFormData(user)
     setIsEditOpen(true)
   }
 
-  const handleUpdate = (e) => {
-    e.preventDefault()
-    const updatedUsers = users.map((user) => (user.id === selectedUser.id ? { ...formData } : user))
+  const handleUpdate = (updatedUser: User) => {
+    const updatedUsers = users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
     setUsers(updatedUsers)
     setIsEditOpen(false)
   }
 
-  const handleDelete = (userId) => {
-    if (confirm('Bạn có chắc muốn xóa người dùng này?')) {
-      setUsers(users.filter((user) => user.id !== userId))
-    }
-  }
-
   const filteredUsers = users.filter(
     (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.department.toLowerCase().includes(searchTerm.toLowerCase())
+      user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  // Custom dialog content style to ensure white background
   const dialogContentClass = 'sm:max-w-[425px] bg-white'
 
   return (
@@ -126,71 +88,12 @@ export default function UserManagement() {
               </Button>
             </DialogTrigger>
             <DialogContent className={dialogContentClass}>
-              <DialogHeader>
-                <DialogTitle>Thêm Người Dùng Mới</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleAdd} className='space-y-4'>
-                <div className='space-y-2'>
-                  <Label>Họ tên</Label>
-                  <Input
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  />
-                </div>
-                <div className='space-y-2'>
-                  <Label>Email</Label>
-                  <Input
-                    type='email'
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  />
-                </div>
-                <div className='space-y-2'>
-                  <Label>Số điện thoại</Label>
-                  <Input
-                    required
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  />
-                </div>
-                <div className='space-y-2'>
-                  <Label>Vai trò</Label>
-                  <Select
-                    value={formData.role}
-                    onValueChange={(value) => setFormData({ ...formData, role: value })}
-                  >
-                    <SelectTrigger className='bg-white'>
-                      <SelectValue placeholder='Chọn vai trò' />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value='admin'>Admin</SelectItem>
-                      <SelectItem value='user'>User</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className='space-y-2'>
-                  <Label>Phòng ban</Label>
-                  <Select
-                    value={formData.department}
-                    onValueChange={(value) => setFormData({ ...formData, department: value })}
-                  >
-                    <SelectTrigger className='bg-white'>
-                      <SelectValue placeholder='Chọn phòng ban' />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value='IT'>IT</SelectItem>
-                      <SelectItem value='Sales'>Sales</SelectItem>
-                      <SelectItem value='Marketing'>Marketing</SelectItem>
-                      <SelectItem value='HR'>HR</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button type='submit' className='w-full'>
-                  Thêm
-                </Button>
-              </form>
+              <UserDialog
+                isOpen={isAddOpen}
+                onOpenChange={setIsAddOpen}
+                onSubmit={handleAdd}
+                mode='add'
+              />
             </DialogContent>
           </Dialog>
         </CardHeader>
@@ -215,7 +118,7 @@ export default function UserManagement() {
                 <TableHead>Email</TableHead>
                 <TableHead>Số điện thoại</TableHead>
                 <TableHead>Vai trò</TableHead>
-                <TableHead>Phòng ban</TableHead>
+                <TableHead>Địa chỉ</TableHead>
                 <TableHead>Trạng thái</TableHead>
                 <TableHead className='text-right'>Thao tác</TableHead>
               </TableRow>
@@ -223,20 +126,26 @@ export default function UserManagement() {
             <TableBody>
               {filteredUsers.map((user) => (
                 <TableRow key={user.id}>
-                  <TableCell className='font-medium'>{user.name}</TableCell>
+                  <TableCell className='font-medium'>
+                    {user.lastName} {user.firstName}
+                  </TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.phone}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>{user.department}</TableCell>
+                  <TableCell>
+                    {user.role === 'SALE'
+                      ? 'Nhân viên bán hàng'
+                      : user.role === 'WAREHOUSE'
+                      ? 'Nhân viên kho'
+                      : 'Admin'}
+                  </TableCell>
+                  <TableCell>{user.contract}</TableCell>
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
-                        user.status === 'active'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-red-100 text-red-700'
+                        user.status ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                       }`}
                     >
-                      {user.status === 'active' ? 'Đang hoạt động' : 'Không hoạt động'}
+                      {user.status ? 'Đang hoạt động' : 'Không hoạt động'}
                     </span>
                   </TableCell>
                   <TableCell className='text-right'>
@@ -248,14 +157,6 @@ export default function UserManagement() {
                     >
                       <Pencil className='h-4 w-4' />
                     </Button>
-                    <Button
-                      variant='ghost'
-                      size='icon'
-                      onClick={() => handleDelete(user.id)}
-                      className='text-red-500 hover:text-red-700'
-                    >
-                      <Trash2 className='h-4 w-4' />
-                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -264,89 +165,15 @@ export default function UserManagement() {
         </CardContent>
       </Card>
 
-      {/* Edit Dialog */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className={dialogContentClass}>
-          <DialogHeader>
-            <DialogTitle>Chỉnh Sửa Người Dùng</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleUpdate} className='space-y-4'>
-            <div className='space-y-2'>
-              <Label>Họ tên</Label>
-              <Input
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              />
-            </div>
-            <div className='space-y-2'>
-              <Label>Email</Label>
-              <Input
-                type='email'
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              />
-            </div>
-            <div className='space-y-2'>
-              <Label>Số điện thoại</Label>
-              <Input
-                required
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              />
-            </div>
-            <div className='space-y-2'>
-              <Label>Vai trò</Label>
-              <Select
-                value={formData.role}
-                onValueChange={(value) => setFormData({ ...formData, role: value })}
-              >
-                <SelectTrigger className='bg-white'>
-                  <SelectValue placeholder='Chọn vai trò' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='admin'>Admin</SelectItem>
-                  <SelectItem value='user'>User</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className='space-y-2'>
-              <Label>Phòng ban</Label>
-              <Select
-                value={formData.department}
-                onValueChange={(value) => setFormData({ ...formData, department: value })}
-              >
-                <SelectTrigger className='bg-white'>
-                  <SelectValue placeholder='Chọn phòng ban' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='IT'>IT</SelectItem>
-                  <SelectItem value='Sales'>Sales</SelectItem>
-                  <SelectItem value='Marketing'>Marketing</SelectItem>
-                  <SelectItem value='HR'>HR</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className='space-y-2'>
-              <Label>Trạng thái</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) => setFormData({ ...formData, status: value })}
-              >
-                <SelectTrigger className='bg-white'>
-                  <SelectValue placeholder='Chọn trạng thái' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='active'>Đang hoạt động</SelectItem>
-                  <SelectItem value='inactive'>Không hoạt động</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button type='submit' className='w-full'>
-              Cập nhật
-            </Button>
-          </form>
+          <UserDialog
+            isOpen={isEditOpen}
+            onOpenChange={setIsEditOpen}
+            onSubmit={handleUpdate}
+            initialData={selectedUser}
+            mode='edit'
+          />
         </DialogContent>
       </Dialog>
     </div>

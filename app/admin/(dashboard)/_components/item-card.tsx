@@ -51,7 +51,7 @@ export const ItemCard = ({ label, growth_rate, growth_direction, value }: ItemCa
               : `${growth_direction == 'stable' ? 'text-black' : 'text-red-500'}`
           }`}
         >
-          {growth_rate}%
+          {growth_rate || '0'}%
         </div>
       </CardHeader>
       <CardContent>

@@ -74,16 +74,24 @@ const EmployeeTable = () => {
             </tr>
           </thead>
           <tbody>
-            {employees.map((employee, index) => (
-              <tr key={employee.id} className='border-b hover:bg-gray-50'>
-                <td className='p-2'>{index + 1}</td>
-                <td className='p-2'>{employee.name}</td>
-                <td className='p-2'>{employee.totalOrders}</td>
-                <td className='p-2'>{employee.completedOrders}</td>
-                <td className='p-2'>{employee.pendingOrders}</td>
-                <td className='p-2'>{formatCurrency(employee.totalRevenue)}</td>
+            {employees.length > 0 ? (
+              employees.map((employee, index) => (
+                <tr key={employee.id} className='border-b hover:bg-gray-50'>
+                  <td className='p-2'>{index + 1}</td>
+                  <td className='p-2'>{employee.name}</td>
+                  <td className='p-2'>{employee.totalOrders}</td>
+                  <td className='p-2'>{employee.completedOrders}</td>
+                  <td className='p-2'>{employee.pendingOrders}</td>
+                  <td className='p-2'>{formatCurrency(employee.totalRevenue)}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className='text-center p-4 text-gray-500'>
+                  Không có dữ liệu nhân viên
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </CardContent>

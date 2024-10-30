@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// pages/CustomerManagement.tsx
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Table,
   TableBody,
@@ -9,137 +11,139 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Search, Plus, Pencil, Trash2, FileText } from 'lucide-react'
-import { Label } from '@/components/ui/label'
+import { Search, Plus, Pencil, Trash2, FileText, CheckCircle2 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import axiosInstance from '@/config/axiosConfig'
+import { Customer } from '@/@types'
+import { CustomerDialog } from './_components/customer-dialog'
+import { useToast } from '@/hooks/use-toast'
+import AlertDialogComponent from '@/components/alert-dialog'
 
 export default function CustomerManagement() {
-  // State for customers data
-  const [customers, setCustomers] = useState([
-    {
-      id: 1,
-      name: 'Công ty TNHH ABC',
-      contactName: 'Nguyễn Văn A',
-      email: 'contact@abc.com',
-      phone: '0123456789',
-      address: 'Số 123 Đường XYZ, Quận 1, TP.HCM',
-      type: 'corporate',
-      status: 'active',
-      level: 'vip',
-      totalOrders: 50,
-      totalRevenue: 150000000
-    },
-    {
-      id: 2,
-      name: 'Trần Thị B',
-      contactName: 'Trần Thị B',
-      email: 'tranthib@gmail.com',
-      phone: '0987654321',
-      address: 'Số 456 Đường ABC, Quận 2, TP.HCM',
-      type: 'individual',
-      status: 'active',
-      level: 'normal',
-      totalOrders: 10,
-      totalRevenue: 25000000
-    }
-  ])
-
-  // State for dialogs
+  const { toast } = useToast()
+  const [customers, setCustomers] = useState<Customer[]>([])
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
-  const [selectedCustomer, setSelectedCustomer] = useState(null)
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
 
-  // Form state
-  const [formData, setFormData] = useState({
-    name: '',
-    contactName: '',
-    email: '',
-    phone: '',
-    address: '',
-    type: '',
-    status: 'active',
-    level: 'normal',
-    totalOrders: 0,
-    totalRevenue: 0
-  })
-
-  // Handle add customer
-  const handleAdd = (e) => {
-    e.preventDefault()
-    const newCustomer = {
-      id: customers.length + 1,
-      ...formData,
-      totalOrders: 0,
-      totalRevenue: 0
+  useEffect(() => {
+    const getCustomers = async () => {
+      try {
+        const data = await axiosInstance.get<any, Customer[]>('/customer')
+        setCustomers(data)
+      } catch (error) {
+        console.error('Error fetching customers:', error)
+      }
     }
-    setCustomers([...customers, newCustomer])
-    setFormData({
-      name: '',
-      contactName: '',
-      email: '',
-      phone: '',
-      address: '',
-      type: '',
-      status: 'active',
-      level: 'normal',
-      totalOrders: 0,
-      totalRevenue: 0
-    })
-    setIsAddOpen(false)
+    getCustomers()
+  }, [])
+
+  const handleAdd = async (formData: Customer) => {
+    const newCustomer: Partial<Customer> = {
+      fullName: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      contract: formData.contract,
+      type: formData.type
+    }
+    console.log(newCustomer)
+    try {
+      const customer = await axiosInstance.post<any, Customer>('/customer', newCustomer)
+      setCustomers([...customers, customer])
+      toast({
+        title: 'Thông báo',
+        description: 'Thêm khách hàng thành công',
+        variant: 'success',
+        // Optional: Thêm icon cho toast
+        icon: <CheckCircle2 className='h-5 w-5' />
+      })
+    } catch (error) {
+      toast({
+        title: 'Thông báo',
+        description: error instanceof Error ? error.message : 'Đã có lỗi khi thêm khách hàng',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsAddOpen(false)
+    }
   }
 
-  // Handle edit customer
-  const handleEdit = (customer) => {
+  const handleEdit = (customer: Customer) => {
     setSelectedCustomer(customer)
-    setFormData(customer)
     setIsEditOpen(true)
   }
 
-  // Handle update customer
-  const handleUpdate = (e) => {
-    e.preventDefault()
-    const updatedCustomers = customers.map((customer) =>
-      customer.id === selectedCustomer.id ? { ...formData } : customer
-    )
-    setCustomers(updatedCustomers)
-    setIsEditOpen(false)
-  }
+  const handleUpdate = async (formData: Customer) => {
+    if (!selectedCustomer) return
 
-  // Handle delete customer
-  const handleDelete = (customerId) => {
-    if (confirm('Bạn có chắc muốn xóa khách hàng này?')) {
-      setCustomers(customers.filter((customer) => customer.id !== customerId))
+    const updatedCustomer: Customer = {
+      ...selectedCustomer,
+      fullName: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      contract: formData.contract,
+      type: formData.type
+    }
+    try {
+      await axiosInstance.patch<any, Customer>(`/customer/${selectedCustomer.id}`, updatedCustomer)
+      const updatedCustomers = customers.map((customer) =>
+        customer.id === selectedCustomer.id ? updatedCustomer : customer
+      )
+      setCustomers(updatedCustomers)
+
+      toast({
+        title: 'Thông báo',
+        description: 'Chỉnh sửa khách hàng thành công',
+        variant: 'success',
+        // Optional: Thêm icon cho toast
+        icon: <CheckCircle2 className='h-5 w-5' />
+      })
+    } catch (error) {
+      toast({
+        title: 'Thông báo',
+        description: error instanceof Error ? error.message : 'Đã có lỗi khi chỉnh sửa',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsEditOpen(false)
+      setSelectedCustomer(null)
     }
   }
 
-  // Filter customers based on search
+  const handleDelete = async (customerId: string) => {
+    try {
+      await axiosInstance.delete<any, Customer>(`/customer/${customerId}`)
+
+      setCustomers(customers.filter((customer) => customer.id !== customerId))
+      toast({
+        title: 'Thông báo',
+        description: 'Xóa khách hàng thành công',
+        variant: 'success',
+        // Optional: Thêm icon cho toast
+        icon: <CheckCircle2 className='h-5 w-5' />
+      })
+    } catch (error) {
+      toast({
+        title: 'Thông báo',
+        description: error instanceof Error ? error.message : 'Đã có lỗi khi xóa',
+        variant: 'destructive'
+      })
+    }
+  }
+
   const filteredCustomers = customers.filter(
     (customer) =>
-      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(searchTerm.toLowerCase())
   )
-  const dialogContentClass = 'sm:max-w-[425px] bg-white'
+
   return (
-    <div className='p-6 space-y-6'>
+    <div className='p-6 space-y-6 min-h-screen'>
       <Card>
         <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
           <CardTitle className='text-2xl font-bold'>Quản Lý Khách Hàng</CardTitle>
@@ -158,99 +162,15 @@ export default function CustomerManagement() {
               </Tooltip>
             </TooltipProvider>
 
-            <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-              <DialogTrigger asChild>
-                <Button className='bg-blue-500 hover:bg-blue-600'>
-                  <Plus className='mr-2 h-4 w-4' />
-                  Thêm khách hàng
-                </Button>
-              </DialogTrigger>
-              <DialogContent className={dialogContentClass}>
-                <DialogHeader>
-                  <DialogTitle>Thêm Khách Hàng Mới</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleAdd} className='space-y-4'>
-                  <div className='space-y-2'>
-                    <Label>Tên khách hàng/công ty</Label>
-                    <Input
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    />
-                  </div>
-                  <div className='space-y-2'>
-                    <Label>Người liên hệ</Label>
-                    <Input
-                      required
-                      value={formData.contactName}
-                      onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
-                    />
-                  </div>
-                  <div className='space-y-2'>
-                    <Label>Email</Label>
-                    <Input
-                      type='email'
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    />
-                  </div>
-                  <div className='space-y-2'>
-                    <Label>Số điện thoại</Label>
-                    <Input
-                      required
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    />
-                  </div>
-                  <div className='space-y-2'>
-                    <Label>Địa chỉ</Label>
-                    <Input
-                      required
-                      value={formData.address}
-                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    />
-                  </div>
-                  <div className='space-y-2'>
-                    <Label>Loại khách hàng</Label>
-                    <Select
-                      value={formData.type}
-                      onValueChange={(value) => setFormData({ ...formData, type: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder='Chọn loại khách hàng' />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value='corporate'>Doanh nghiệp</SelectItem>
-                        <SelectItem value='individual'>Cá nhân</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className='space-y-2'>
-                    <Label>Cấp độ</Label>
-                    <Select
-                      value={formData.level}
-                      onValueChange={(value) => setFormData({ ...formData, level: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder='Chọn cấp độ' />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value='vip'>VIP</SelectItem>
-                        <SelectItem value='normal'>Thường</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button type='submit' className='w-full'>
-                    Thêm
-                  </Button>
-                </form>
-              </DialogContent>
-            </Dialog>
+            <Button className='bg-blue-500 hover:bg-blue-600' onClick={() => setIsAddOpen(true)}>
+              <Plus className='mr-2 h-4 w-4' />
+              Thêm khách hàng
+            </Button>
           </div>
         </CardHeader>
 
         <CardContent>
+          {/* Search input */}
           <div className='flex items-center py-4'>
             <div className='relative flex-1'>
               <Search className='absolute left-2 top-2.5 h-4 w-4 text-gray-500' />
@@ -269,21 +189,20 @@ export default function CustomerManagement() {
                 <TableHead>Tên KH/Công ty</TableHead>
                 <TableHead>Liên hệ</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Điện thoại</TableHead>
                 <TableHead>Loại KH</TableHead>
-                <TableHead>Cấp độ</TableHead>
-                <TableHead>Đơn hàng</TableHead>
-                <TableHead>Doanh thu</TableHead>
+                <TableHead>Điện thoại</TableHead>
+                {/* <TableHead>Cấp độ</TableHead> */}
+                {/* <TableHead>Đơn hàng</TableHead> */}
+                {/* <TableHead>Doanh thu</TableHead> */}
                 <TableHead className='text-right'>Thao tác</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredCustomers.map((customer) => (
                 <TableRow key={customer.id}>
-                  <TableCell className='font-medium'>{customer.name}</TableCell>
-                  <TableCell>{customer.contactName}</TableCell>
-                  <TableCell>{customer.email}</TableCell>
-                  <TableCell>{customer.phone}</TableCell>
+                  <TableCell className='font-medium'>{customer.fullName}</TableCell>
+                  <TableCell>{customer.contract || 'chưa có'}</TableCell>
+                  <TableCell>{customer.email || 'chưa có'}</TableCell>
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
@@ -295,20 +214,10 @@ export default function CustomerManagement() {
                       {customer.type === 'corporate' ? 'Doanh nghiệp' : 'Cá nhân'}
                     </span>
                   </TableCell>
-                  <TableCell>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        customer.level === 'vip'
-                          ? 'bg-yellow-100 text-yellow-700'
-                          : 'bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      {customer.level === 'vip' ? 'VIP' : 'Thường'}
-                    </span>
-                  </TableCell>
-                  <TableCell>{customer.totalOrders}</TableCell>
-                  <TableCell>{customer.totalRevenue.toLocaleString()}đ</TableCell>
-                  <TableCell className='text-right'>
+                  <TableCell>{customer.phone || 'chưa có'}</TableCell>
+                  {/* <TableCell>{customer.totalOrders}</TableCell>
+                  <TableCell>{customer.totalRevenue.toLocaleString()}đ</TableCell> */}
+                  <TableCell className='text-right flex items-center justify-end'>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -330,14 +239,31 @@ export default function CustomerManagement() {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button
+                          <AlertDialogComponent
+                            title='Xóa khách hàng'
+                            description={`Bạn có chắc chắn muốn xóa khách hàng "${customer.fullName}"? Hành động này không thể hoàn tác.`}
+                            triggerText='Xóa'
+                            actionText='Xác nhận'
+                            cancelText='Hủy bỏ'
+                            onConfirm={() => handleDelete(customer.id)}
+                            triggerElement={
+                              <Button
+                                variant='ghost'
+                                size='icon'
+                                className='text-red-500 hover:text-red-700'
+                              >
+                                <Trash2 className='h-4 w-4' />
+                              </Button>
+                            }
+                          />
+                          {/* <Button
                             variant='ghost'
                             size='icon'
                             onClick={() => handleDelete(customer.id)}
                             className='text-red-500 hover:text-red-700'
                           >
                             <Trash2 className='h-4 w-4' />
-                          </Button>
+                          </Button> */}
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Xóa</p>
@@ -352,60 +278,34 @@ export default function CustomerManagement() {
         </CardContent>
       </Card>
 
+      {/* Add Dialog */}
+      <CustomerDialog
+        isOpen={isAddOpen}
+        onOpenChange={setIsAddOpen}
+        onSubmit={handleAdd}
+        mode='add'
+      />
+
       {/* Edit Dialog */}
-      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className={dialogContentClass}>
-          <DialogHeader>
-            <DialogTitle>Chỉnh Sửa Khách Hàng</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleUpdate} className='space-y-4'>
-            <div className='space-y-2'>
-              <Label>Tên khách hàng/công ty</Label>
-              <Input
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              />
-            </div>
-            <div className='space-y-2'>
-              <Label>Người liên hệ</Label>
-              <Input
-                required
-                value={formData.contactName}
-                onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
-              />
-            </div>
-            <div className='space-y-2'>
-              <Label>Email</Label>
-              <Input
-                type='email'
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              />
-            </div>
-            <div className='space-y-2'>
-              <Label>Số điện thoại</Label>
-              <Input
-                required
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              />
-            </div>
-            <div className='space-y-2'>
-              <Label>Địa chỉ</Label>
-              <Input
-                required
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              />
-            </div>
-            <Button type='submit' className='w-full'>
-              Cập nhật
-            </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <CustomerDialog
+        isOpen={isEditOpen}
+        onOpenChange={setIsEditOpen}
+        onSubmit={handleUpdate}
+        initialData={
+          selectedCustomer
+            ? {
+                id: selectedCustomer.id,
+                fullName: selectedCustomer.fullName,
+                email: selectedCustomer.email,
+                phone: selectedCustomer.phone,
+                contract: selectedCustomer.contract,
+                type: selectedCustomer.type,
+                rolte: selectedCustomer.rolte // Add this line
+              }
+            : undefined
+        }
+        mode='edit'
+      />
     </div>
   )
 }

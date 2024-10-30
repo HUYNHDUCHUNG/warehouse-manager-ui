@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
-import { Package, Eye, EyeOff } from 'lucide-react'
+import { Package, Eye, EyeOff, CheckCircle2 } from 'lucide-react'
 
 import {
   Card,
@@ -58,7 +58,10 @@ export default function LoginPage() {
       if (response.data.status) {
         toast({
           title: 'Đăng nhập thành công',
-          description: 'Chuyển hướng đến trang chủ...'
+          description: 'Chuyển hướng đến trang chủ...',
+          variant: 'success',
+          // Optional: Thêm icon cho toast
+          icon: <CheckCircle2 className='h-5 w-5' />
         })
 
         // Chuyển hướng dựa vào role từ response
