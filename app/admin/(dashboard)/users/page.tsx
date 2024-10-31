@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import React, { useEffect, useState } from 'react'
 import {
@@ -8,30 +9,18 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Search, Plus, Pencil } from 'lucide-react'
-import { Label } from '@/components/ui/label'
+import { Search, Plus, Pencil, CheckCircle2 } from 'lucide-react'
 import { User } from '@/@types'
+import { useToast } from '@/hooks/use-toast'
 import axiosInstance from '@/config/axiosConfig'
 import { UserDialog } from './_components/dialog'
 
 export default function UserManagement() {
+  const { toast } = useToast()
   const [users, setUsers] = useState<User[]>([])
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
@@ -50,9 +39,30 @@ export default function UserManagement() {
     getUsers()
   }, [])
 
-  const handleAdd = (user: User) => {
-    setUsers([...users, user])
-    setIsAddOpen(false)
+  const handleAdd = async (user: User) => {
+    // console.log(user)
+    // setIsAddOpen(false)
+    console.log(user)
+    try {
+      const newUser = await axiosInstance.post<any, User>('/user', user)
+      console.log(newUser)
+      setUsers([newUser, ...users])
+      toast({
+        title: 'Thông báo',
+        description: 'Thêm người dùng thành công',
+        variant: 'success',
+        // Optional: Thêm icon cho toast
+        icon: <CheckCircle2 className='h-5 w-5' />
+      })
+    } catch (error) {
+      toast({
+        title: 'Thông báo',
+        description: error instanceof Error ? error.message : 'Đã có lỗi khi thêm người dùng',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsAddOpen(false)
+    }
   }
 
   const handleEdit = (user: User) => {
@@ -60,17 +70,37 @@ export default function UserManagement() {
     setIsEditOpen(true)
   }
 
-  const handleUpdate = (updatedUser: User) => {
+  const handleUpdate = async (updatedUser: User) => {
     const updatedUsers = users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
     setUsers(updatedUsers)
-    setIsEditOpen(false)
+
+    try {
+      await axiosInstance.patch<any, User>(`/user/${updatedUser.id}`, updatedUser)
+      const updatedUsers = users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
+      setUsers(updatedUsers)
+      toast({
+        title: 'Thông báo',
+        description: 'Sửa người dùng thành công',
+        variant: 'success',
+        // Optional: Thêm icon cho toast
+        icon: <CheckCircle2 className='h-5 w-5' />
+      })
+    } catch (error) {
+      toast({
+        title: 'Thông báo',
+        description: error instanceof Error ? error.message : 'Đã có lỗi khi sửa người dùng',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsEditOpen(false)
+    }
   }
 
   const filteredUsers = users.filter(
     (user) =>
-      user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      user?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user?.phone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user?.email?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const dialogContentClass = 'sm:max-w-[425px] bg-white'
@@ -114,6 +144,7 @@ export default function UserManagement() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>STT</TableHead>
                 <TableHead>Họ tên</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Số điện thoại</TableHead>
@@ -124,11 +155,10 @@ export default function UserManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.map((user) => (
+              {filteredUsers.map((user, index) => (
                 <TableRow key={user.id}>
-                  <TableCell className='font-medium'>
-                    {user.lastName} {user.firstName}
-                  </TableCell>
+                  <TableCell className='font-medium'>{index + 1}</TableCell>
+                  <TableCell>{user.fullName}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.phone}</TableCell>
                   <TableCell>

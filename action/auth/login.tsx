@@ -13,6 +13,7 @@ interface LoginResponse {
     token: string
     role: string
     status: boolean
+    id: string
   }
 }
 
@@ -48,6 +49,13 @@ export async function loginAction(
     cookies().set({
       name: 'role',
       value: loginData.data.role, // Giả sử API trả về role dạng 'AD'
+      path: '/',
+      httpOnly: true,
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * ACCESS_TOKEN_EXPIRY_DAYS)
+    })
+    cookies().set({
+      name: 'id',
+      value: loginData.data.id,
       path: '/',
       httpOnly: true,
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * ACCESS_TOKEN_EXPIRY_DAYS)

@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Bell, Settings, Grid, Moon, Maximize, MessageSquare } from 'lucide-react'
 import {
   DropdownMenu,
@@ -15,9 +15,32 @@ import { Badge } from '@/components/ui/badge'
 import { logout } from '@/action/auth/logout'
 import { useRouter } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { getUser } from '@/lib/utils'
 
+interface UserData {
+  id: string
+  email?: string
+  name?: string
+  role: string
+}
 const Navbar = () => {
   const router = useRouter()
+  // const [user, setUser] = useState<UserData | null>(null)
+
+  // useEffect(() => {
+  //   async function fetchUser() {
+  //     try {
+  //       const userData = await getUser()
+  //       setUser(userData)
+  //     } catch (error) {
+  //       console.error('Lỗi lấy thông tin người dùng:', error)
+  //     }
+  //   }
+
+  //   fetchUser()
+  // }, [])
+
+  // if (!user) return null
   const handleLogout = async () => {
     try {
       const result = await logout()
@@ -106,9 +129,9 @@ const Navbar = () => {
                 <AvatarImage src='https://github.com/shadcn.png' />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
-              <div className='hidden md:block text-left'>
-                <div className='font-medium'>Anna Adame</div>
-                <div className='text-sm text-gray-500'>Founder</div>
+              <div className='hidden md:block text-left min-w-[90px]'>
+                <div className='font-medium'>ANa</div>
+                <div className='text-sm text-gray-500'>Admin</div>
               </div>
             </Button>
           </DropdownMenuTrigger>
