@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import { Supplier } from '@/@types'
 import AlertDialogComponent from '@/components/alert-dialog'
@@ -7,97 +8,131 @@ import {
   Table,
   TableBody,
   TableCell,
-  //   TableFooter,
   TableHead,
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator
-} from '@/components/ui/breadcrumb'
 import axiosInstance from '@/config/axiosConfig'
-import { Pencil, Trash } from 'lucide-react'
-import Link from 'next/link'
+import { Pencil, Trash, Plus, CheckCircle2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-// import { AxiosResponse } from 'axios'
 import { useEffect, useState } from 'react'
+import BreadcrumbComponent from '@/components/breadcrumb'
+import { useToast } from '@/hooks/use-toast'
+import { SupplierDialog } from './_components/dialog'
 
 const SupplierPage = () => {
   const router = useRouter()
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]) // Sử dụng mảng Product
+  const { toast } = useToast()
+  const [suppliers, setSuppliers] = useState<Supplier[]>([])
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier>()
+  const [isLoading, setIsLoading] = useState(true)
+
+  const fetchSuppliers = async () => {
+    try {
+      const data = await axiosInstance.get<any, Supplier[]>('/supplier')
+      setSuppliers(data)
+    } catch (error) {
+      console.error('Error fetching suppliers:', error)
+      toast({
+        variant: 'destructive',
+        title: 'Lỗi',
+        description: 'Không thể tải danh sách nhà cung cấp'
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const getProducts = async () => {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const data = await axiosInstance.get<any, Supplier[]>(
-          '/supplier' // Điều chỉnh URL để lấy tất cả sản phẩm
-        )
+    fetchSuppliers()
+  }, [])
 
-        setSuppliers(data) // Lưu danh sách sản phẩm vào state
-        console.log(data)
-      } catch (error) {
-        console.error('Error fetching suppliers:', error)
+  const handleOpenAdd = () => {
+    setSelectedSupplier(undefined)
+    setIsDialogOpen(true)
+  }
+
+  const handleOpenEdit = (supplier: Supplier) => {
+    setSelectedSupplier(supplier)
+    setIsDialogOpen(true)
+  }
+
+  const handleSubmit = async (data: Partial<Supplier>) => {
+    try {
+      if (selectedSupplier) {
+        // Edit mode
+        await axiosInstance.patch(`/supplier/${selectedSupplier.id}`, data)
+        toast({
+          title: 'Thành công',
+          description: 'Cập nhật nhà cung cấp thành công',
+          variant: 'success',
+          icon: <CheckCircle2 className='h-5 w-5' />
+        })
+      } else {
+        // Add mode
+        await axiosInstance.post('/supplier', data)
+        toast({
+          title: 'Thành công',
+          description: 'Thêm nhà cung cấp thành công',
+          variant: 'success',
+          icon: <CheckCircle2 className='h-5 w-5' />
+        })
       }
+      fetchSuppliers()
+    } catch (error) {
+      console.error('Error submitting supplier:', error)
+      toast({
+        variant: 'destructive',
+        title: 'Lỗi',
+        description: 'Không thể lưu thông tin nhà cung cấp'
+      })
     }
-
-    getProducts()
-  }, []) // Không cần params, vì bạn muốn lấy tất cả sản phẩm
+  }
 
   const onDeleteSupplier = async (id: number) => {
     try {
-      await axiosInstance.delete(`/product/${id}`)
-      //   toast.success('Course created')
+      await axiosInstance.delete(`/supplier/${id}`)
       setSuppliers((prevSuppliers) => prevSuppliers.filter((supplier) => supplier.id !== id))
+      toast({
+        title: 'Thành công',
+        description: 'Xóa nhà cung cấp thành công',
+        variant: 'success',
+        icon: <CheckCircle2 className='h-5 w-5' />
+      })
       router.refresh()
     } catch (error) {
-      //   toast.error('Something Wrong')
+      toast({
+        variant: 'destructive',
+        title: 'Lỗi',
+        description: 'Không thể xóa nhà cung cấp'
+      })
     }
   }
+
+  const items = [{ label: 'Home', href: '/admin' }, { label: 'QL nhà cung cấp' }]
 
   return (
     <div>
       <div className='mb-4'>
         <div className='mt-1'>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href='/admin'>Home</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Quản lý nhà cung cấp</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <BreadcrumbComponent items={items} />
         </div>
       </div>
       <div className='bg-white min-h-[100vh] p-4 rounded-xl'>
         <div className='flex justify-between mb-4'>
-          <h1 className='text-xl font-bold'>Danh sách nhà cung cấp</h1>
-          <Link href={'/supplier/create'}>
-            <Button>Thêm nhà cung cấp</Button>
-          </Link>
+          <h1 className='text-2xl font-bold'>Danh sách nhà cung cấp</h1>
+          <Button onClick={handleOpenAdd}>
+            <Plus className='w-4 h-4 mr-2' />
+            Thêm nhà cung cấp
+          </Button>
         </div>
 
-        {!suppliers.length ? (
+        {isLoading ? (
           <>
-            <Skeleton className='w-full h-[30px] my-1' />
-            <Skeleton className='w-full h-[30px] my-1' />
-            <Skeleton className='w-full h-[30px] my-1' />
-            <Skeleton className='w-full h-[30px] my-1' />
-            <Skeleton className='w-full h-[30px] my-1' />
-            <Skeleton className='w-full h-[30px] my-1' />
-            <Skeleton className='w-full h-[30px] my-1' />
-            <Skeleton className='w-full h-[30px] my-1' />
-            <Skeleton className='w-full h-[30px] my-1' />
-            <Skeleton className='w-full h-[30px] my-1' />
-            <Skeleton className='w-full h-[30px] my-1' />
+            {[...Array(10)].map((_, index) => (
+              <Skeleton key={index} className='w-full h-[30px] my-1' />
+            ))}
           </>
         ) : (
           <Table>
@@ -121,33 +156,41 @@ const SupplierPage = () => {
                   <TableCell>{supplier.phone}</TableCell>
                   <TableCell className='flex items-center gap-2'>
                     <AlertDialogComponent
-                      title='Xóa sản phẩm'
-                      description={`Bạn có chắc chắn muốn xóa sản phẩm "${supplier.supplier_name}"? Hành động này không thể hoàn tác.`}
+                      title='Xóa nhà cung cấp'
+                      description={`Bạn có chắc chắn muốn xóa nhà cung cấp "${supplier.supplier_name}"? Hành động này không thể hoàn tác.`}
                       triggerText='Xóa'
                       actionText='Xác nhận'
                       cancelText='Hủy bỏ'
                       onConfirm={() => onDeleteSupplier(supplier.id)}
                       triggerElement={
-                        <Button className=' bg-red-600 hover:bg-red-500'>
-                          <Trash size={14} />
+                        <Button variant='destructive' size='icon'>
+                          <Trash className='w-4 h-4' />
                         </Button>
                       }
                     />
-                    {supplier?.id && (
-                      <Link href={`/supplier/create/${supplier.id}`}>
-                        <Button className=' bg-sky-600 hover:bg-sky-500'>
-                          <Pencil size={14} />
-                        </Button>
-                      </Link>
-                    )}
+                    <Button
+                      variant='secondary'
+                      size='icon'
+                      onClick={() => handleOpenEdit(supplier)}
+                    >
+                      <Pencil className='w-4 h-4' />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         )}
+
+        <SupplierDialog
+          isOpen={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+          onSubmit={handleSubmit}
+          initialData={selectedSupplier}
+        />
       </div>
     </div>
   )
 }
+
 export default SupplierPage

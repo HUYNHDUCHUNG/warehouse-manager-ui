@@ -103,10 +103,10 @@ export default function Revenue() {
   }
 
   return (
-    <div className='p-6 space-y-6'>
+    <div className='space-y-6'>
       {/* Header */}
       <div className='flex justify-between items-center'>
-        <h1 className='text-3xl font-bold'>Thống Kê Doanh Thu</h1>
+        <h1 className='text-2xl font-bold'>Thống Kê Doanh Thu</h1>
         <div className='flex gap-4'>
           <Select value={timeRange} onValueChange={handleTimeRangeChange}>
             <SelectTrigger className='w-[180px]'>

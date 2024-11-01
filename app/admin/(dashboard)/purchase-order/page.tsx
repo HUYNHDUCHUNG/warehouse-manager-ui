@@ -13,19 +13,12 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import axiosInstance from '@/config/axiosConfig'
 import { PurchaseOrder } from '@/@types'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator
-} from '@/components/ui/breadcrumb'
 
 import { Trash } from 'lucide-react'
 import Link from 'next/link'
 import AlertDialogComponent from '@/components/alert-dialog'
 import { formatCurrency } from '@/lib/utils'
+import BreadcrumbComponent from '@/components/breadcrumb'
 
 const PurchaseOrderPage = () => {
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]) // Sử dụng mảng PurchaseOrder
@@ -60,33 +53,20 @@ const PurchaseOrderPage = () => {
       // Hiển thị thông báo lỗi nếu cần (bạn có thể dùng toast hoặc alert)
     }
   }
+  const items = [{ label: 'Home', href: '/admin' }, { label: 'QL nhập kho' }]
 
   return (
     <div>
       <div>
         <div className='mb-4'>
           <div className='mt-1'>
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink href='/admin'>Home</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                {/* <BreadcrumbItem>
-              <BreadcrumbLink href='/purchase-order'>Quản lý nhập kho</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator /> */}
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Quản lý nhập kho</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+            <BreadcrumbComponent items={items} />
           </div>
         </div>
       </div>
       <div className='bg-white p-4 rounded-xl'>
         <div className='flex justify-between mb-4'>
-          <h1 className='text-xl font-bold'>Danh sách đơn hàng nhập</h1>
+          <h1 className='text-2xl font-bold'>Danh sách đơn hàng nhập</h1>
           <Link href={'/admin/purchase-order/create'}>
             <Button>Tạo đơn nhập mới</Button>
           </Link>

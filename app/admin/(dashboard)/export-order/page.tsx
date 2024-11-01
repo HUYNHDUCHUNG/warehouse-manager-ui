@@ -13,19 +13,12 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import axiosInstance from '@/config/axiosConfig'
 import { ExportOrder } from '@/@types'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator
-} from '@/components/ui/breadcrumb'
 
 import { Trash } from 'lucide-react'
 import Link from 'next/link'
 import AlertDialogComponent from '@/components/alert-dialog'
 import { formatCurrency } from '@/lib/utils'
+import BreadcrumbComponent from '@/components/breadcrumb'
 
 const ExportOrderPage = () => {
   const [exportOrders, setExportOrders] = useState<ExportOrder[]>([]) // Sử dụng mảng PurchaseOrder
@@ -69,27 +62,14 @@ const ExportOrderPage = () => {
       console.error('Error update purchase:', error)
     }
   }
+  const items = [{ label: 'Home', href: '/admin' }, { label: 'QL xuất kho' }]
 
   return (
     <div>
       <div>
         <div className='mb-4'>
           <div className='mt-1'>
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink href='/admin'>Home</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                {/* <BreadcrumbItem>
-              <BreadcrumbLink href='/purchase-order'>Quản lý nhập kho</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator /> */}
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Quản lý xuất kho</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+            <BreadcrumbComponent items={items} />
           </div>
         </div>
       </div>

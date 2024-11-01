@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
+
 import React, { useEffect, useState } from 'react'
 import { Bell, Settings, Grid, Moon, Maximize, MessageSquare } from 'lucide-react'
 import {
@@ -15,32 +17,24 @@ import { Badge } from '@/components/ui/badge'
 import { logout } from '@/action/auth/logout'
 import { useRouter } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { getUser } from '@/lib/utils'
+import { getUserDetail } from '@/action/auth/getUser'
 
-interface UserData {
-  id: string
-  email?: string
-  name?: string
-  role: string
-}
 const Navbar = () => {
   const router = useRouter()
-  // const [user, setUser] = useState<UserData | null>(null)
+  // const [user, setUser] = useState<UserInfo | null>(null)
 
   // useEffect(() => {
-  //   async function fetchUser() {
-  //     try {
-  //       const userData = await getUser()
-  //       setUser(userData)
-  //     } catch (error) {
-  //       console.error('Lỗi lấy thông tin người dùng:', error)
-  //     }
+  //   const loadUser = async () => {
+  //     const userData = await getUserDetail()
+  //     console.log(userData)
+  //     setUser(userData)
   //   }
-
-  //   fetchUser()
+  //   loadUser()
   // }, [])
 
-  // if (!user) return null
+  // if (!user?.isAuthenticated) {
+  //   return <div>Loading...</div>
+  // }
   const handleLogout = async () => {
     try {
       const result = await logout()

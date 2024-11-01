@@ -35,15 +35,10 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator
-} from '@/components/ui/breadcrumb'
 import { formatCurrency } from '@/lib/utils'
+import BreadcrumbComponent from '@/components/breadcrumb'
+import { useToast } from '@/hooks/use-toast'
+import { CheckCircle2 } from 'lucide-react'
 
 const productSchema = z.object({
   productId: z.string().min(1, 'Chọn sản phẩm'),
@@ -61,6 +56,8 @@ const formSchema = z.object({
 
 const CreatePurchaseOrder = () => {
   const router = useRouter()
+  const { toast } = useToast()
+
   const [products, setProducts] = useState<Product[]>([])
   const [customers, setCustomers] = useState<Customer[]>([])
   const [productList, setProductList] = useState<z.infer<typeof productSchema>[]>([])
@@ -94,8 +91,19 @@ const CreatePurchaseOrder = () => {
       console.log('value:', values)
       await axiosInstance.post('/export-order', values)
       router.push('/admin/export-order')
+      toast({
+        title: 'Thông báo',
+        description: 'Thêm đơn xuất hàng thành công',
+        variant: 'success',
+        icon: <CheckCircle2 className='h-5 w-5' />
+      })
     } catch (error) {
       console.error('Error creating purchase order:', error)
+      toast({
+        title: 'Thông báo',
+        description: error instanceof Error ? error.message : 'Đã có lỗi khi thêm đơn hàng',
+        variant: 'destructive'
+      })
     }
   }
 
@@ -125,26 +133,17 @@ const CreatePurchaseOrder = () => {
       return sum + (parseFloat(product.totalPrice) || 0)
     }, 0)
   }, [productList])
+  const items = [
+    { label: 'Home', href: '/admin' },
+    { label: 'QL xuất kho', href: '/admin/export-order' },
+    { label: 'Thêm đơn xuất kho' }
+  ]
 
   return (
     <div>
       <div className='mb-4'>
         <div className='mt-1'>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href='/'>Home</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href='/export-order'>Quản lý xuất kho</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Tạo phiếu xuất</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <BreadcrumbComponent items={items} />
         </div>
       </div>
       <div className='bg-white p-4 rounded-xl'>

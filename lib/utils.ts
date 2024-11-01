@@ -18,6 +18,11 @@ export function cn(...inputs: ClassValue[]) {
 export const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
 }
+export const getCookie = (name: string) => {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop()?.split(';').shift()
+}
 
 
 

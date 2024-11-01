@@ -18,6 +18,7 @@ import { User } from '@/@types'
 import { useToast } from '@/hooks/use-toast'
 import axiosInstance from '@/config/axiosConfig'
 import { UserDialog } from './_components/dialog'
+import BreadcrumbComponent from '@/components/breadcrumb'
 
 export default function UserManagement() {
   const { toast } = useToast()
@@ -104,9 +105,12 @@ export default function UserManagement() {
   )
 
   const dialogContentClass = 'sm:max-w-[425px] bg-white'
-
+  const items = [{ label: 'Home', href: '/admin' }, { label: 'QL người dùng' }]
   return (
-    <div className='p-6 space-y-6'>
+    <div>
+      <div>
+        <BreadcrumbComponent items={items} />
+      </div>
       <Card>
         <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
           <CardTitle className='text-2xl font-bold'>Quản Lý Người Dùng</CardTitle>

@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-
+import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -20,20 +20,14 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator
-} from '@/components/ui/breadcrumb'
 import { Input } from '@/components/ui/input'
 import { Category } from '@/@types'
 import axiosInstance from '@/config/axiosConfig'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Textarea } from '@/components/ui/textarea'
+import BreadcrumbComponent from '@/components/breadcrumb'
+import { CheckCircle2 } from 'lucide-react'
 
 const formSchema = z.object({
   product_name: z.string().min(2).max(100),
@@ -45,6 +39,7 @@ const formSchema = z.object({
 
 const CreateProduct = () => {
   const router = useRouter()
+  const { toast } = useToast()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -76,31 +71,32 @@ const CreateProduct = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axiosInstance.post('/product', values)
-      //   toast.success('Course created')
+      toast({
+        title: 'Thông báo',
+        description: 'Thêm sản phẩm thành công',
+        variant: 'success',
+        // Optional: Thêm icon cho toast
+        icon: <CheckCircle2 className='h-5 w-5' />
+      })
       router.push(`/admin/product`)
     } catch (error) {
-      //   toast.error('Something Wrong')
+      toast({
+        title: 'Thông báo',
+        description: error instanceof Error ? error.message : 'Đã có lỗi khi thêm sản phẩm',
+        variant: 'destructive'
+      })
     }
   }
+  const items = [
+    { label: 'Home', href: '/admin' },
+    { label: 'Sản phẩm', href: '/admin/product' },
+    { label: 'Thêm sản phẩm' }
+  ]
   return (
     <div>
       <div className='mb-4'>
         <div className='mt-1'>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href='/admin'>Home</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href='/admin/product'>Quản lý sản phẩm</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Thêm sản phẩm</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <BreadcrumbComponent items={items} />
         </div>
       </div>
       <div className='bg-white p-4 rounded-xl'>

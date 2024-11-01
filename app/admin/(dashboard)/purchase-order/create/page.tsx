@@ -26,6 +26,7 @@ import { Product, Supplier } from '@/@types'
 import axiosInstance from '@/config/axiosConfig'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/hooks/use-toast'
 import {
   Table,
   TableBody,
@@ -35,15 +36,9 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator
-} from '@/components/ui/breadcrumb'
 import { formatCurrency } from '@/lib/utils'
+import BreadcrumbComponent from '@/components/breadcrumb'
+import { CheckCircle2 } from 'lucide-react'
 
 const productSchema = z.object({
   productId: z.string().min(1, 'Chọn sản phẩm'),
@@ -61,6 +56,7 @@ const formSchema = z.object({
 
 const CreatePurchaseOrder = () => {
   const router = useRouter()
+  const { toast } = useToast()
   const [products, setProducts] = useState<Product[]>([])
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [productList, setProductList] = useState<z.infer<typeof productSchema>[]>([])
@@ -94,8 +90,19 @@ const CreatePurchaseOrder = () => {
       console.log(values)
       await axiosInstance.post('/purchase-order', values)
       router.push('/admin/purchase-order')
+      toast({
+        title: 'Thông báo',
+        description: 'Thêm đơn nhập hàng thành công',
+        variant: 'success',
+        icon: <CheckCircle2 className='h-5 w-5' />
+      })
     } catch (error) {
       console.error('Error creating purchase order:', error)
+      toast({
+        title: 'Thông báo',
+        description: error instanceof Error ? error.message : 'Đã có lỗi khi thêm đơn hàng',
+        variant: 'destructive'
+      })
     }
   }
 
@@ -125,26 +132,17 @@ const CreatePurchaseOrder = () => {
       return sum + (parseFloat(product.totalPrice) || 0)
     }, 0)
   }, [productList])
+  const items = [
+    { label: 'Home', href: '/admin' },
+    { label: 'QL nhập kho', href: '/admin/purchase-order' },
+    { label: 'Thêm đơn nhập kho' }
+  ]
 
   return (
     <div>
       <div className='mb-4'>
         <div className='mt-1'>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href='/admin'>Home</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href='/admin/purchase-order'>Quản lý nhập kho</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Tạo phiếu nhập</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <BreadcrumbComponent items={items} />
         </div>
       </div>
       <div className='bg-white p-4 rounded-xl'>

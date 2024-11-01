@@ -12,20 +12,14 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator
-} from '@/components/ui/breadcrumb'
+
 import axiosInstance from '@/config/axiosConfig'
 import { Pencil, Trash } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 // import { AxiosResponse } from 'axios'
 import { useEffect, useState } from 'react'
+import BreadcrumbComponent from '@/components/breadcrumb'
 
 const ProductPage = () => {
   const router = useRouter()
@@ -59,26 +53,18 @@ const ProductPage = () => {
       //   toast.error('Something Wrong')
     }
   }
+
+  const items = [{ label: 'Home', href: '/admin' }, { label: 'Sản phẩm' }]
   return (
     <div>
       <div className='mb-4'>
         <div className='mt-1'>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href='/admin'>Home</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Quản lý sản phẩm</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <BreadcrumbComponent items={items} />
         </div>
       </div>
       <div className='bg-white min-h-[100vh] p-4 rounded-xl'>
         <div className='flex justify-between mb-4'>
-          <h1 className='text-xl font-bold'>Danh sách sản phẩm</h1>
+          <h1 className='text-2xl font-bold'>Danh sách sản phẩm</h1>
           <Link href={'/admin/product/create'}>
             <Button>Thêm sản phẩm</Button>
           </Link>

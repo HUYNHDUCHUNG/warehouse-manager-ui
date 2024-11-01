@@ -9,14 +9,6 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator
-} from '@/components/ui/breadcrumb'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
@@ -36,6 +28,7 @@ import { vi } from 'date-fns/locale'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import axiosInstance from '@/config/axiosConfig'
+import BreadcrumbComponent from '@/components/breadcrumb'
 
 // interface InventoryReport {
 //   product_name: string
@@ -150,21 +143,11 @@ const InventoryReportPage = () => {
   const calculateTotalValue = () => {
     return report?.details.reduce((sum, detail) => sum + (parseInt(detail.inventory_value) || 0), 0)
   }
-
+  const items = [{ label: 'Home', href: '/admin' }, { label: 'Báo cáo tồn kho' }]
   return (
     <div>
       <div className='mb-4'>
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href='/admin'>Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Báo cáo tồn kho</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+        <BreadcrumbComponent items={items} />
       </div>
 
       <div className='space-y-4'>

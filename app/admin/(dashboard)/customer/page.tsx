@@ -21,6 +21,7 @@ import { Customer } from '@/@types'
 import { CustomerDialog } from './_components/customer-dialog'
 import { useToast } from '@/hooks/use-toast'
 import AlertDialogComponent from '@/components/alert-dialog'
+import BreadcrumbComponent from '@/components/breadcrumb'
 
 export default function CustomerManagement() {
   const { toast } = useToast()
@@ -58,7 +59,6 @@ export default function CustomerManagement() {
         title: 'Thông báo',
         description: 'Thêm khách hàng thành công',
         variant: 'success',
-        // Optional: Thêm icon cho toast
         icon: <CheckCircle2 className='h-5 w-5' />
       })
     } catch (error) {
@@ -141,9 +141,13 @@ export default function CustomerManagement() {
       customer.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(searchTerm.toLowerCase())
   )
+  const items = [{ label: 'Home', href: '/admin' }, { label: 'QL khách hàng' }]
 
   return (
-    <div className='p-6 space-y-6 min-h-screen'>
+    <div className=' min-h-screen'>
+      <div>
+        <BreadcrumbComponent items={items} />
+      </div>
       <Card>
         <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
           <CardTitle className='text-2xl font-bold'>Quản Lý Khách Hàng</CardTitle>
