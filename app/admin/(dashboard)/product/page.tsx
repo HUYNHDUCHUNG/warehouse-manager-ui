@@ -131,7 +131,7 @@ const ProductPage = () => {
                       }
                     />
                     {product?.id && (
-                      <Link href={`/product/edit/${product.id}`}>
+                      <Link href={`/admin/product/edit/${product.id}`}>
                         <Button className=' bg-sky-600 hover:bg-sky-500'>
                           <Pencil size={14} />
                         </Button>
