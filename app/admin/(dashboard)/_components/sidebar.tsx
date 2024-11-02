@@ -15,7 +15,10 @@ import {
   BaggageClaim,
   Settings,
   Minus,
-  User
+  User,
+  HandHelping,
+  Tag,
+  Truck
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -136,13 +139,19 @@ export default function Sidebar() {
       hasSubmenu: false
     },
     {
+      icon: <Tag className='w-4 h-4' />,
+      label: 'Danh mục',
+      href: '/admin/category',
+      hasSubmenu: false
+    },
+    {
       icon: <PackageSearch className='w-4 h-4' />,
       label: 'Sản phẩm',
       href: '/admin/product',
       hasSubmenu: false
     },
     {
-      icon: <PackageSearch className='w-4 h-4' />,
+      icon: <Truck className='w-4 h-4' />,
       label: 'Nhà cung cấp',
       href: '/admin/supplier',
       hasSubmenu: false
@@ -176,6 +185,12 @@ export default function Sidebar() {
           href: '/admin/reports/revenue'
         }
       ]
+    },
+    {
+      icon: <HandHelping className='w-4 h-4' />,
+      label: 'Đề xuất nhập hàng',
+      href: '/admin/inventory-recommendation',
+      hasSubmenu: false
     },
     {
       icon: <Users className='w-4 h-4' />,
