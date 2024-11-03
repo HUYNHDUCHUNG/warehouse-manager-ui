@@ -144,7 +144,7 @@ export default function CustomerManagement() {
   const items = [{ label: 'Home', href: '/admin' }, { label: 'QL khách hàng' }]
 
   return (
-    <div className=' min-h-screen'>
+    <div>
       <div>
         <BreadcrumbComponent items={items} />
       </div>
