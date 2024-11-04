@@ -14,15 +14,17 @@ import { Skeleton } from '@/components/ui/skeleton'
 import axiosInstance from '@/config/axiosConfig'
 import { PurchaseOrder } from '@/@types'
 
-import { Trash } from 'lucide-react'
+import { Search, Trash } from 'lucide-react'
 import Link from 'next/link'
 import AlertDialogComponent from '@/components/alert-dialog'
 import { formatCurrency } from '@/lib/utils'
 import BreadcrumbComponent from '@/components/breadcrumb'
+import { Input } from '@/components/ui/input'
 
 const PurchaseOrderPage = () => {
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]) // Sử dụng mảng PurchaseOrder
   const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     const getPurchaseOrders = async () => {
@@ -54,6 +56,11 @@ const PurchaseOrderPage = () => {
     }
   }
   const items = [{ label: 'Home', href: '/admin' }, { label: 'QL nhập kho' }]
+  const filteredPurchaseOrders = purchaseOrders.filter(
+    (purchaseOrder) =>
+      purchaseOrder?.codePurchaseOrder?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      purchaseOrder?.supplier.supplier_name?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
     <div>
@@ -70,6 +77,17 @@ const PurchaseOrderPage = () => {
           <Link href={'/admin/purchase-order/create'}>
             <Button>Tạo đơn nhập mới</Button>
           </Link>
+        </div>
+        <div className='flex items-center py-4'>
+          <div className='relative flex-1'>
+            <Search className='absolute left-2 top-2.5 h-4 w-4 text-gray-500' />
+            <Input
+              placeholder='Tìm kiếm theo mã phiếu nhập, tên nhà cung cấp...'
+              className='pl-8'
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
         {loading ? (
           <div>
@@ -90,7 +108,7 @@ const PurchaseOrderPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {purchaseOrders.map((order, index) => (
+              {filteredPurchaseOrders.map((order, index) => (
                 <TableRow key={order.id}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{order.codePurchaseOrder}</TableCell>
@@ -114,7 +132,13 @@ const PurchaseOrderPage = () => {
                     />
                     {order?.id && (
                       <Button
-                        onClick={() => window.open(`/invoice/purchase-order/${order.id}`, '_blank')}
+                        onClick={() =>
+                          window.open(
+                            `/invoice/purchase-order/${order.id}`,
+                            'Print Invoice',
+                            'height=600,width=800'
+                          )
+                        }
                         className='bg-sky-600 hover:bg-sky-500'
                       >
                         Invoice

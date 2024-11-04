@@ -1,3 +1,4 @@
+import InfoUser from './_components/info-user'
 import Navbar from './_components/navbar'
 import Sidebar from './_components/sidebar'
 const Dashboard = ({ children }: { children: React.ReactNode }) => {
@@ -7,7 +8,9 @@ const Dashboard = ({ children }: { children: React.ReactNode }) => {
         <Sidebar />
       </div>
       <div className='h-[56px] w-[calc(100%-14rem)] ms-56 sticky top-0'>
-        <Navbar />
+        <Navbar>
+          <InfoUser />
+        </Navbar>
       </div>
       <main className='h-full min-h-[calc(100vh-56px)] w-[calc(100%-14rem)] ms-56 px-4 py-6 bg-[#f3f3f9]'>
         {children}

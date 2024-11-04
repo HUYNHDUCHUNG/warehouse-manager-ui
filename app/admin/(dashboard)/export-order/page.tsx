@@ -14,15 +14,17 @@ import { Skeleton } from '@/components/ui/skeleton'
 import axiosInstance from '@/config/axiosConfig'
 import { ExportOrder } from '@/@types'
 
-import { Trash } from 'lucide-react'
+import { Search, Trash } from 'lucide-react'
 import Link from 'next/link'
 import AlertDialogComponent from '@/components/alert-dialog'
 import { formatCurrency } from '@/lib/utils'
 import BreadcrumbComponent from '@/components/breadcrumb'
+import { Input } from '@/components/ui/input'
 
 const ExportOrderPage = () => {
   const [exportOrders, setExportOrders] = useState<ExportOrder[]>([]) // Sử dụng mảng PurchaseOrder
   const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     const getExportOrders = async () => {
@@ -63,7 +65,11 @@ const ExportOrderPage = () => {
     }
   }
   const items = [{ label: 'Home', href: '/admin' }, { label: 'QL xuất kho' }]
-
+  const filteredExportOrders = exportOrders.filter(
+    (exportOrder) =>
+      exportOrder?.codeExportOrder?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      exportOrder?.customer.fullName?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
   return (
     <div>
       <div>
@@ -79,6 +85,17 @@ const ExportOrderPage = () => {
           <Link href={'/admin/export-order/create'}>
             <Button>Tạo đơn xuất mới</Button>
           </Link>
+        </div>
+        <div className='flex items-center py-4'>
+          <div className='relative flex-1'>
+            <Search className='absolute left-2 top-2.5 h-4 w-4 text-gray-500' />
+            <Input
+              placeholder='Tìm kiếm theo mã phiếu xuất, tên khách hàng...'
+              className='pl-8'
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
         {loading ? (
           <div>
@@ -100,7 +117,7 @@ const ExportOrderPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {exportOrders.map((exportOrder, index) => (
+              {filteredExportOrders.map((exportOrder, index) => (
                 <TableRow key={exportOrder.id}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{exportOrder.codeExportOrder}</TableCell>

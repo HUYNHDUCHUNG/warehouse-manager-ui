@@ -1,91 +1,97 @@
-import React from 'react'
-import { PurchaseOrder, PurchaseOrderDetail } from '@/@types'
+import { PurchaseOrder } from '@/@types'
+import { Card } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 import { formatCurrency } from '@/lib/utils'
+import { format } from 'date-fns'
+import React from 'react'
 
 const PurchaseOrderInvoice: React.FC<{ purchaseOrder: PurchaseOrder }> = ({ purchaseOrder }) => {
+  const formatDate = (dateString: string) => {
+    return format(new Date(dateString), 'dd/MM/yyyy')
+  }
+
   return (
-    <div className='max-w-3xl mx-auto p-8 bg-white shadow-lg'>
-      <div className='flex justify-between items-start mb-8'>
-        <div>
-          <h1 className='text-2xl font-bold text-red-600'>Hóa đơn nhập kho</h1>
-          <p>{purchaseOrder.supplier.supplier_name}</p>
-          <p>{purchaseOrder.supplier.contract}</p>
-        </div>
-        <div className='text-right'>
-          <div className='w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center'>
-            <span className='text-white font-bold'>LOGO</span>
-          </div>
-        </div>
+    <Card className='max-w-4xl mx-auto p-6'>
+      <div className='text-center mb-8'>
+        <h1 className='text-2xl font-bold mb-2'>PHIẾU NHẬP KHO</h1>
+        <p className='text-gray-600'>Số phiếu: {purchaseOrder.codePurchaseOrder}</p>
+        <p className='text-gray-600'>Ngày nhập: {formatDate(purchaseOrder.dateImport)}</p>
       </div>
 
-      <div className='mb-8'>
-        <div className='grid grid-cols-2 gap-4'>
+      <div className='mb-6 space-y-2'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <div>
-            <h2 className='font-bold'>Hóa đơn từ</h2>
-            <p>{purchaseOrder.supplier.supplier_name}</p>
-            <p>{purchaseOrder.supplier.contract}</p>
-          </div>
-          <div className='text-right'>
-            <p>
-              <span className='font-bold'>Ngày nhập kho:</span>{' '}
-              {new Date(purchaseOrder.dateImport).toLocaleDateString()}
-            </p>
-            <p>
-              <span className='font-bold'>Mã hóa đơn</span> {purchaseOrder.codePurchaseOrder}
-            </p>
-            {/* <p>
-              <span className='font-bold'>Due Date:</span>{' '}
-              {new Date(purchaseOrder.dateImport).toLocaleDateString()}
-            </p> */}
+            <h2 className='font-semibold mb-2'>Thông tin nhà cung cấp:</h2>
+            <div className='space-y-1'>
+              <p>Tên: {purchaseOrder.supplier.supplier_name}</p>
+              <p>Địa chỉ: {purchaseOrder.supplier.contract}</p>
+              <p>Điện thoại: {purchaseOrder.supplier.phone}</p>
+              <p>Email: {purchaseOrder.supplier.email}</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <table className='w-full mb-8'>
-        <thead>
-          <tr className='bg-red-600 text-white'>
-            <th className='py-2 px-4 text-left'>Tên sản phẩm</th>
-            <th className='py-2 px-4 text-left'>Số lượng</th>
-            <th className='py-2 px-4 text-right'>Đơn giá</th>
-            <th className='py-2 px-4 text-right'>Tổng giá</th>
-          </tr>
-        </thead>
-        <tbody>
-          {purchaseOrder.purchaseOrderDetails.map((detail: PurchaseOrderDetail, index: number) => (
-            <tr key={index} className='border-b'>
-              <td className='py-2 px-4'>{detail.product.product_name}</td>
-              <td className='py-2 px-4'>{detail.quantity}</td>
-              <td className='py-2 px-4 text-right'>{formatCurrency(parseInt(detail.unitPrice))}</td>
-              <td className='py-2 px-4 text-right'>
-                {formatCurrency(parseInt(detail.totalPrice))}
-              </td>
-            </tr>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className='w-12'>STT</TableHead>
+            <TableHead>Tên sản phẩm</TableHead>
+            <TableHead>Đơn vị tính</TableHead>
+            <TableHead className='text-right'>Số lượng</TableHead>
+            <TableHead className='text-right'>Đơn giá</TableHead>
+            <TableHead className='text-right'>Thành tiền</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {purchaseOrder.purchaseOrderDetails.map((item, index) => (
+            <TableRow key={item.id}>
+              <TableCell>{index + 1}</TableCell>
+              <TableCell>{item.product.product_name}</TableCell>
+              <TableCell>{item.product.unit_calc}</TableCell>
+              <TableCell className='text-right'>{item.quantity}</TableCell>
+              <TableCell className='text-right'>
+                {formatCurrency(parseInt(item.unitPrice))}
+              </TableCell>
+              <TableCell className='text-right'>
+                {formatCurrency(parseInt(item.totalPrice))}
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
 
-      <div className='flex justify-end'>
-        <div className='w-1/2'>
-          <div className='flex justify-between mb-2'>
-            <span className='font-bold'>Tổng phụ</span>
-            <span>{formatCurrency(parseInt(purchaseOrder.total_price))}</span>
-          </div>
-          <div className='flex justify-between mb-2'>
-            <span className='font-bold'>Thuế</span>
-            <span>{formatCurrency(0)}</span>
-          </div>
-          <div className='flex justify-between font-bold text-xl'>
-            <span>Total</span>
-            <span>{formatCurrency(parseInt(purchaseOrder.total_price))}</span>
-          </div>
+      <div className='mt-6'>
+        <p className='text-right font-semibold'>
+          Tổng tiền: {formatCurrency(parseInt(purchaseOrder.total_price))}
+        </p>
+      </div>
+
+      <div className='mt-8 grid grid-cols-2 gap-4'>
+        <div className='text-center'>
+          <p className='font-semibold'>Người lập phiếu</p>
+          <p className='text-sm text-gray-500 mt-12'>(Ký và ghi rõ họ tên)</p>
+        </div>
+        <div className='text-center'>
+          <p className='font-semibold'>Thủ kho</p>
+          <p className='text-sm text-gray-500 mt-12'>(Ký và ghi rõ họ tên)</p>
         </div>
       </div>
 
-      <div className='mt-8'>
-        <h2 className='font-bold mb-2'>Điều khoản và điều kiện</h2>
-        <p>Thời hạn thanh toán trong vòng 15 ngày</p>
-      </div>
-    </div>
+      {purchaseOrder.note && (
+        <div className='mt-6'>
+          <p className='font-semibold'>Ghi chú:</p>
+          <p>{purchaseOrder.note}</p>
+        </div>
+      )}
+    </Card>
   )
 }
 

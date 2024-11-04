@@ -1,40 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { Bell, Settings, Grid, Moon, Maximize, MessageSquare } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Bell, Grid, Maximize, MessageSquare, Moon, Settings } from 'lucide-react'
 // import Image from 'next/image'
 import { logout } from '@/action/auth/logout'
 import { useRouter } from 'next/navigation'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { getUserDetail } from '@/action/auth/getUser'
-
-const Navbar = () => {
+interface NavbarProps {
+  children: React.ReactNode
+}
+const Navbar = ({ children }: NavbarProps) => {
   const router = useRouter()
-  // const [user, setUser] = useState<UserInfo | null>(null)
-
-  // useEffect(() => {
-  //   const loadUser = async () => {
-  //     const userData = await getUserDetail()
-  //     console.log(userData)
-  //     setUser(userData)
-  //   }
-  //   loadUser()
-  // }, [])
-
-  // if (!user?.isAuthenticated) {
-  //   return <div>Loading...</div>
-  // }
   const handleLogout = async () => {
     try {
       const result = await logout()
@@ -119,19 +103,12 @@ const Navbar = () => {
                 alt='User avatar'
                 className='w-8 h-8 rounded-full'
               /> */}
-              <Avatar>
-                <AvatarImage src='https://github.com/shadcn.png' />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-              <div className='hidden md:block text-left min-w-[90px]'>
-                <div className='font-medium'>ANa</div>
-                <div className='text-sm text-gray-500'>Admin</div>
-              </div>
+              {children}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end' className='w-56'>
-            <DropdownMenuLabel>Welcome Anna!</DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            {/* <DropdownMenuLabel>Welcome Anna!</DropdownMenuLabel> */}
+            {/* <DropdownMenuSeparator /> */}
             <DropdownMenuItem>Profile</DropdownMenuItem>
             <DropdownMenuItem>Messages</DropdownMenuItem>
             <DropdownMenuItem>Taskboard</DropdownMenuItem>

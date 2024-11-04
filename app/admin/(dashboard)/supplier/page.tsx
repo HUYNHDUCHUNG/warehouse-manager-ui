@@ -13,12 +13,13 @@ import {
   TableRow
 } from '@/components/ui/table'
 import axiosInstance from '@/config/axiosConfig'
-import { Pencil, Trash, Plus, CheckCircle2 } from 'lucide-react'
+import { Pencil, Trash, Plus, CheckCircle2, Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import BreadcrumbComponent from '@/components/breadcrumb'
 import { useToast } from '@/hooks/use-toast'
 import { SupplierDialog } from './_components/dialog'
+import { Input } from '@/components/ui/input'
 
 const SupplierPage = () => {
   const router = useRouter()
@@ -27,6 +28,7 @@ const SupplierPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier>()
   const [isLoading, setIsLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
 
   const fetchSuppliers = async () => {
     try {
@@ -111,7 +113,12 @@ const SupplierPage = () => {
   }
 
   const items = [{ label: 'Home', href: '/admin' }, { label: 'QL nhà cung cấp' }]
-
+  const filteredSuppliers = suppliers.filter(
+    (supplier) =>
+      supplier?.supplier_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      supplier?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      supplier?.phone?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
   return (
     <div>
       <div className='mb-4'>
@@ -126,6 +133,17 @@ const SupplierPage = () => {
             <Plus className='w-4 h-4 mr-2' />
             Thêm nhà cung cấp
           </Button>
+        </div>
+        <div className='flex items-center py-4'>
+          <div className='relative flex-1'>
+            <Search className='absolute left-2 top-2.5 h-4 w-4 text-gray-500' />
+            <Input
+              placeholder='Tìm kiếm theo tên, email, sđt...'
+              className='pl-8'
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
 
         {isLoading ? (
@@ -147,7 +165,7 @@ const SupplierPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {suppliers.map((supplier, index) => (
+              {filteredSuppliers.map((supplier, index) => (
                 <TableRow key={supplier.id}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{supplier.supplier_name}</TableCell>

@@ -14,16 +14,18 @@ import {
 } from '@/components/ui/table'
 
 import axiosInstance from '@/config/axiosConfig'
-import { Pencil, Trash } from 'lucide-react'
+import { Pencil, Search, Trash } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 // import { AxiosResponse } from 'axios'
 import { useEffect, useState } from 'react'
 import BreadcrumbComponent from '@/components/breadcrumb'
+import { Input } from '@/components/ui/input'
 
 const ProductPage = () => {
   const router = useRouter()
   const [products, setProducts] = useState<Product[]>([]) // Sử dụng mảng Product
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     const getProducts = async () => {
@@ -55,6 +57,9 @@ const ProductPage = () => {
   }
 
   const items = [{ label: 'Home', href: '/admin' }, { label: 'Sản phẩm' }]
+  const filteredProducts = products.filter((product) =>
+    product?.product_name?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
   return (
     <div>
       <div className='mb-4'>
@@ -68,6 +73,17 @@ const ProductPage = () => {
           <Link href={'/admin/product/create'}>
             <Button>Thêm sản phẩm</Button>
           </Link>
+        </div>
+        <div className='flex items-center py-4'>
+          <div className='relative flex-1'>
+            <Search className='absolute left-2 top-2.5 h-4 w-4 text-gray-500' />
+            <Input
+              placeholder='Tìm kiếm theo tên sản phẩm...'
+              className='pl-8'
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
 
         {!products.length ? (
@@ -103,7 +119,7 @@ const ProductPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map((product, index) => (
+              {filteredProducts.map((product, index) => (
                 <TableRow key={product.id}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{product.product_name}</TableCell>

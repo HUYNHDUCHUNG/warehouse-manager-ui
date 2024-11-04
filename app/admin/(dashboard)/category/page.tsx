@@ -13,12 +13,13 @@ import {
   TableRow
 } from '@/components/ui/table'
 import axiosInstance from '@/config/axiosConfig'
-import { Pencil, Trash, Plus, CheckCircle2 } from 'lucide-react'
+import { Pencil, Trash, Plus, CheckCircle2, Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import BreadcrumbComponent from '@/components/breadcrumb'
 import { useToast } from '@/hooks/use-toast'
 import { CategoryDialog } from './_components/dialog'
+import { Input } from '@/components/ui/input'
 
 const CategoryPage = () => {
   const router = useRouter()
@@ -27,7 +28,7 @@ const CategoryPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<Category>()
   const [isLoading, setIsLoading] = useState(true)
-
+  const [searchTerm, setSearchTerm] = useState('')
   const fetchCategories = async () => {
     try {
       const data = await axiosInstance.get<any, Category[]>('/category')
@@ -111,7 +112,9 @@ const CategoryPage = () => {
   }
 
   const items = [{ label: 'Home', href: '/admin' }, { label: 'QL danh mục' }]
-
+  const filteredCategories = categories.filter((category) =>
+    category?.name.toLowerCase().includes(searchTerm.toLowerCase())
+  )
   return (
     <div>
       <div className='mb-4'>
@@ -126,6 +129,17 @@ const CategoryPage = () => {
             <Plus className='w-4 h-4 mr-2' />
             Thêm danh mục
           </Button>
+        </div>
+        <div className='flex items-center py-4'>
+          <div className='relative flex-1'>
+            <Search className='absolute left-2 top-2.5 h-4 w-4 text-gray-500' />
+            <Input
+              placeholder='Tìm kiếm theo tên danh mục...'
+              className='pl-8'
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
 
         {isLoading ? (
@@ -146,7 +160,7 @@ const CategoryPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {categories.map((category, index) => (
+              {filteredCategories.map((category, index) => (
                 <TableRow key={category.id}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{category.name}</TableCell>
