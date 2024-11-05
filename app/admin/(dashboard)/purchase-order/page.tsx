@@ -104,6 +104,7 @@ const PurchaseOrderPage = () => {
                 <TableHead>Nhà cung cấp</TableHead>
                 <TableHead>Tổng giá</TableHead>
                 <TableHead>Ngày nhập</TableHead>
+                <TableHead>Người tạo</TableHead>
                 <TableHead>Hành động</TableHead>
               </TableRow>
             </TableHeader>
@@ -116,6 +117,7 @@ const PurchaseOrderPage = () => {
                   <TableCell className='line-clamp-2'>{order.supplier.supplier_name}</TableCell>
                   <TableCell>{formatCurrency(parseInt(order.total_price))}</TableCell>
                   <TableCell>{order.dateImport}</TableCell>
+                  <TableCell>{order.user.fullName}</TableCell>
                   <TableCell className='flex items-center gap-2'>
                     <AlertDialogComponent
                       title='Xóa phiếu nhập hàng'

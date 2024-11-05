@@ -113,6 +113,7 @@ const ExportOrderPage = () => {
                 <TableHead>Tổng giá</TableHead>
                 <TableHead>Ngày tạo đơn</TableHead>
                 <TableHead>Trạng thái</TableHead>
+                <TableHead>Người tạo</TableHead>
                 <TableHead>Hành động</TableHead>
               </TableRow>
             </TableHeader>
@@ -134,6 +135,7 @@ const ExportOrderPage = () => {
                       <span className='bg-red-600 text-white'>Thiếu hàng</span>
                     )}
                   </TableCell>
+                  <TableCell>{exportOrder.user.fullName}</TableCell>
                   <TableCell className='flex items-center gap-2'>
                     <AlertDialogComponent
                       title='Xóa phiếu nhập hàng'

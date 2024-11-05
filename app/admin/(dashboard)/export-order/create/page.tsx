@@ -89,7 +89,20 @@ const CreatePurchaseOrder = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log('value:', values)
-      await axiosInstance.post('/export-order', values)
+      const response = await fetch('/api/export-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error)
+      }
+
       router.push('/admin/export-order')
       toast({
         title: 'Thông báo',
@@ -98,7 +111,7 @@ const CreatePurchaseOrder = () => {
         icon: <CheckCircle2 className='h-5 w-5' />
       })
     } catch (error) {
-      console.error('Error creating purchase order:', error)
+      console.error('Error creating export order:', error)
       toast({
         title: 'Thông báo',
         description: error instanceof Error ? error.message : 'Đã có lỗi khi thêm đơn hàng',

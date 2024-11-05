@@ -87,8 +87,20 @@ const CreatePurchaseOrder = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log(values)
-      await axiosInstance.post('/purchase-order', values)
+      const response = await fetch('/api/purchase-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error)
+      }
+
       router.push('/admin/purchase-order')
       toast({
         title: 'Thông báo',
