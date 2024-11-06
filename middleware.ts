@@ -10,6 +10,12 @@ export function middleware(request: NextRequest) {
         if (role === 'AD') {
             return NextResponse.redirect(new URL('/admin', request.url))
         }
+        if (role === 'WAREHOUSE') {
+            return NextResponse.redirect(new URL('/warehouse', request.url))
+        }
+        if (role === 'SALE') {
+            return NextResponse.redirect(new URL('/sale', request.url))
+        }
         // Thêm các role khác nếu cần
         return NextResponse.redirect(new URL('/', request.url))
     }
@@ -38,7 +44,7 @@ export const config = {
     matcher: [
         '/admin/:path*',
         '/warehouse/:path*',
-        '/staff/:path*',
+        '/sale/:path*',
         '/login',
     ],
 }

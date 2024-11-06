@@ -64,8 +64,8 @@ export default function TopProductsTable() {
               <tr className='border-b'>
                 <th className='p-2 text-left'>STT</th>
                 <th className='p-2 text-left'>Sản phẩm</th>
-                <th className='p-2 text-left'>SL xuất</th>
-                <th className='p-2 text-left'>SL đơn</th>
+                <th className='p-2 text-left'>Số lượng xuất</th>
+                <th className='p-2 text-left'>Số đơn</th>
                 <th className='p-2 text-left'>Tồn kho</th>
                 <th className='p-2 text-left'>Tổng giá</th>
               </tr>

@@ -63,12 +63,19 @@ export default function LoginPage() {
           // Optional: Thêm icon cho toast
           icon: <CheckCircle2 className='h-5 w-5' />
         })
+        if (response.data.role === 'AD') {
+          router.replace('/admin')
+        }
+        if (response.data.role === 'WAREHOUSE') {
+          router.replace('/warehouse')
+        }
+        if (response.data.role === 'SALE') {
+          router.replace('/sale')
+        }
 
         // Chuyển hướng dựa vào role từ response
         // const dashboardPath =
         //   response.data.role === 'ADMIN' ? '/dashboard/admin' : '/dashboard/warehouse'
-
-        router.replace('/admin')
       }
     } catch (error) {
       toast({

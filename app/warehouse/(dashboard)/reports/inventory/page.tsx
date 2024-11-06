@@ -273,14 +273,14 @@ const InventoryReportPage = () => {
               </div>
               <div className='p-4 bg-purple-50 rounded-lg'>
                 <p className='text-sm text-purple-600'>Hàng tồn kho cao</p>
-                <div className='text-2xl font-bold text-purple-700'>
+                <p className='text-2xl font-bold text-purple-700'>
                   {loading ? (
                     <Skeleton className='h-8 w-32' />
                   ) : (
                     report?.details.filter((detail) => parseInt(detail.ending_inventory) > 100)
                       .length
                   )}
-                </div>
+                </p>
               </div>
             </div>
           </CardContent>
