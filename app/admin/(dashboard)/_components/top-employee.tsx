@@ -58,7 +58,7 @@ const EmployeeTable = () => {
   return (
     <Card>
       <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-        <div className='text-xl font-bold'>Nhân viên hàng đầu</div>
+        <div className='font-bold'>Nhân viên hàng đầu</div>
         <Button variant='link'>Báo cáo</Button>
       </CardHeader>
       <CardContent className='p-4'>

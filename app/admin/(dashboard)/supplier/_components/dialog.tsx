@@ -93,13 +93,15 @@ export function SupplierDialog({ isOpen, onClose, onSubmit, initialData }: Suppl
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className='sm:max-w-[425px] bg-white'>
         <DialogHeader>
-          <DialogTitle>{initialData ? 'Edit Supplier' : 'Add New Supplier'}</DialogTitle>
+          <DialogTitle>
+            {initialData ? 'Chỉnh sửa nhà cung cấp' : 'Thêm mới nhà cung cấp'}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className='grid gap-4 py-4'>
             <div className='grid grid-cols-4 items-center gap-4'>
               <Label htmlFor='supplier_name' className='text-right'>
-                Name
+                Tên NCC:
               </Label>
               <Input
                 id='supplier_name'
@@ -116,7 +118,7 @@ export function SupplierDialog({ isOpen, onClose, onSubmit, initialData }: Suppl
 
             <div className='grid grid-cols-4 items-center gap-4'>
               <Label htmlFor='contract' className='text-right'>
-                Contract
+                Liên hệ:
               </Label>
               <Input
                 id='contract'
@@ -147,7 +149,7 @@ export function SupplierDialog({ isOpen, onClose, onSubmit, initialData }: Suppl
 
             <div className='grid grid-cols-4 items-center gap-4'>
               <Label htmlFor='phone' className='text-right'>
-                Phone
+                SĐT:
               </Label>
               <Input
                 id='phone'
@@ -164,7 +166,7 @@ export function SupplierDialog({ isOpen, onClose, onSubmit, initialData }: Suppl
             <Button type='button' variant='outline' onClick={onClose}>
               Cancel
             </Button>
-            <Button type='submit'>{initialData ? 'Save changes' : 'Add supplier'}</Button>
+            <Button type='submit'>{initialData ? 'Lưu' : 'Thêm NCC'}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
