@@ -21,14 +21,22 @@ import {
   DialogTrigger,
   DialogFooter
 } from '@/components/ui/dialog'
-import { Package, AlertTriangle, FileText } from 'lucide-react'
+import { Package, AlertTriangle, FileText, CheckCircle2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
 
 import axiosInstance from '@/config/axiosConfig'
+import { z } from 'zod'
 
-// Define TypeScript interfaces
+// Define form schema with more specific type checking
+const formSchema = z.object({
+  productId: z.string(),
+  suggestedQuantity: z.number().min(1, 'Số lượng phải lớn hơn 0'),
+  notes: z.string().optional()
+})
+
+// Rest of the interfaces remain the same...
 interface Customer {
   id: string
   fullName: string
@@ -55,11 +63,6 @@ interface Product {
   recommendedImportQuantity: number
 }
 
-interface SuggestionForm {
-  quantity: string
-  notes: string
-}
-
 interface RecommendationsResponse {
   recommendations: Product[]
 }
@@ -79,8 +82,9 @@ const InventoryRecommendationDashboard: React.FC = () => {
   const [ordersLoading, setOrdersLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
   const [ordersError, setOrdersError] = useState<Error | null>(null)
-  const [suggestionForm, setSuggestionForm] = useState<SuggestionForm>({
-    quantity: '',
+  const [suggestionForm, setSuggestionForm] = useState<z.infer<typeof formSchema>>({
+    productId: '',
+    suggestedQuantity: 0,
     notes: ''
   })
 
@@ -93,7 +97,6 @@ const InventoryRecommendationDashboard: React.FC = () => {
           '/recommendation/inventory'
         )
         setRecommendations(response)
-        // console.log(response.data)
       } catch (err) {
         setError(err as Error)
         toast({
@@ -120,7 +123,6 @@ const InventoryRecommendationDashboard: React.FC = () => {
           `/recommendation/unprocessed-orders/${selectedProduct.productId}`
         )
         setUnprocessedOrders(response)
-        console.log(response)
       } catch (err) {
         setOrdersError(err as Error)
         toast({
@@ -140,24 +142,48 @@ const InventoryRecommendationDashboard: React.FC = () => {
     try {
       if (!selectedProduct) return
 
-      await axiosInstance.post('/recommendation/import-suggestions', {
-        productId: selectedProduct.productId,
-        suggestedQuantity: parseInt(suggestionForm.quantity),
-        notes: suggestionForm.notes
+      // Prepare and validate form data
+      const formData = {
+        productId: selectedProduct.productId.toString(), // Ensure productId is a string
+        suggestedQuantity: Number(suggestionForm.suggestedQuantity),
+        notes: suggestionForm.notes || '' // Ensure notes is a string
+      }
+
+      const validatedData = formSchema.parse(formData)
+
+      const response = await fetch('/api/recommendation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(validatedData)
       })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error)
+      }
 
       toast({
-        title: 'Thành công',
-        description: 'Đã tạo đề xuất nhập hàng'
+        title: 'Thông báo',
+        description: 'Thêm đơn nhập hàng thành công',
+        variant: 'success',
+        icon: <CheckCircle2 className='h-5 w-5' />
       })
 
-      // Reset form
-      setSuggestionForm({ quantity: '', notes: '' })
+      // Reset form with proper types
+      setSuggestionForm({
+        productId: '',
+        suggestedQuantity: 0,
+        notes: ''
+      })
     } catch (error) {
+      console.error('Error creating purchase order:', error)
       toast({
-        variant: 'destructive',
-        title: 'Lỗi',
-        description: 'Không thể tạo đề xuất nhập hàng'
+        title: 'Thông báo',
+        description: error instanceof Error ? error.message : 'Đã có lỗi khi thêm đơn hàng',
+        variant: 'destructive'
       })
     }
   }
@@ -229,7 +255,8 @@ const InventoryRecommendationDashboard: React.FC = () => {
                           onClick={() => {
                             setSelectedProduct(item)
                             setSuggestionForm({
-                              quantity: item.recommendedImportQuantity.toString(),
+                              productId: item.productId.toString(), // Ensure productId is a string
+                              suggestedQuantity: item.recommendedImportQuantity,
                               notes: ''
                             })
                           }}
@@ -267,11 +294,11 @@ const InventoryRecommendationDashboard: React.FC = () => {
                                   <label className='text-sm font-medium'>Số lượng đề xuất</label>
                                   <Input
                                     type='number'
-                                    value={suggestionForm.quantity}
+                                    value={suggestionForm.suggestedQuantity}
                                     onChange={(e) =>
                                       setSuggestionForm((prev) => ({
                                         ...prev,
-                                        quantity: e.target.value
+                                        suggestedQuantity: Number(e.target.value)
                                       }))
                                     }
                                     className='mt-1'

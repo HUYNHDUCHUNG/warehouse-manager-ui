@@ -70,24 +70,28 @@ const Dashboard = () => {
           growth_rate={incom?.growth_rate || ''}
           growth_direction={incom?.growth_direction || 'increase'}
           value={incom?.current_month.formatted_income || '0'}
+          href='/admin/reports/revenue'
         />
         <ItemCard
           label={'Đơn hàng'}
           growth_rate={order?.growth_rate || ''}
           growth_direction={order?.growth_direction || 'increase'}
           value={order?.current_month.total_orders || '0'}
+          href='/admin/reports/inventory'
         />
         <ItemCard
           label={'Nhập kho'}
           growth_rate={purchaeOrder?.growth_rate || ''}
           growth_direction={purchaeOrder?.growth_direction || 'increase'}
           value={purchaeOrder?.current_month.total_orders || '0'}
+          href='/admin/reports/inventory'
         />
         <ItemCard
           label={'Khách hàng'}
           growth_rate={customer?.growth_rate || '0'}
           growth_direction={customer?.growth_direction || 'increase'}
           value={customer?.current_month.new_customers || '0'}
+          href='/admin/customer'
         />
       </div>
 

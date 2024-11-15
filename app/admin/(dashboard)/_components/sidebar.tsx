@@ -189,8 +189,10 @@ export default function Sidebar() {
     {
       icon: <HandHelping className='w-4 h-4' />,
       label: 'Đề xuất nhập hàng',
-      href: '/admin/inventory-recommendation',
-      hasSubmenu: false
+      href: '/admin/suggestion-history',
+      hasSubmenu: false,
+      hasChip: true,
+      chipText: '1'
     },
     {
       icon: <Users className='w-4 h-4' />,

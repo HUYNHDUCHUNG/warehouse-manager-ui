@@ -3,15 +3,17 @@
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 interface ItemCardProps {
   label: string
   growth_rate: string
   growth_direction: string
   value: string
+  href: string
 }
 
-export const ItemCard = ({ label, growth_rate, growth_direction, value }: ItemCardProps) => {
+export const ItemCard = ({ label, growth_rate, growth_direction, value, href }: ItemCardProps) => {
   //   if (isLoading) {
   //     return (
   //       <Card>
@@ -56,9 +58,11 @@ export const ItemCard = ({ label, growth_rate, growth_direction, value }: ItemCa
       </CardHeader>
       <CardContent>
         <div className='text-2xl font-bold'>{value}</div>
-        <Button variant='link' className='p-0 h-auto'>
-          Xem chi tiết
-        </Button>
+        <Link href={href}>
+          <Button variant='link' className='p-0 h-auto'>
+            Xem chi tiết
+          </Button>
+        </Link>
       </CardContent>
     </Card>
   )
