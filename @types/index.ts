@@ -1,5 +1,6 @@
 export type Product = {
     id: number;
+    code: string;
     product_name: string;
     category_id: number;
     description: string;
@@ -21,6 +22,7 @@ export type Category = {
 }
 export interface Supplier {
     id: number
+    code: string
     supplier_name: string
     contract: string
     email: string
@@ -86,6 +88,7 @@ export interface ExportOrderDetail {
 
 export interface Customer {
     id: string;
+    code: string
     fullName: string;
     contract: string;
     rolte: string;

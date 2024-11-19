@@ -1,127 +1,277 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
-import { AnalyticCustomers, AnalyticOrder, Incom, PurchaseOrdersData } from '@/@types'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import axiosInstance from '@/config/axiosConfig'
-import dynamic from 'next/dynamic'
-import { useEffect, useState } from 'react'
-import { ItemCard } from './_components/item-card'
-// import DynamicChart from './_components/dynamic-chart'
-const DynamicChart = dynamic(() => import('./_components/dynamic-chart'), {
-  ssr: false,
-  loading: () => <div className='h-[300px] flex items-center justify-center'>Loading chart...</div>
-})
+import { ExportOrder } from '@/@types'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
+import { DollarSign, ShoppingCart, Target, TrendingUp } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from 'recharts'
 
-// const data = [
-//   { name: 'T1', Orders: 90, ExportOrders: 80 },
-//   { name: 'T2', Orders: 95, ExportOrders: 100 },
-//   { name: 'T3', Orders: 100, ExportOrders: 110 },
-//   { name: 'T4', Orders: 80, ExportOrders: 75 },
-//   { name: 'T5', Orders: 85, ExportOrders: 90 },
-//   { name: 'T6', Orders: 70, ExportOrders: 85 },
-//   { name: 'T7', Orders: 75, ExportOrders: 90 },
-//   { name: 'T8', Orders: 85, ExportOrders: 100 },
-//   { name: 'T9', Orders: 90, ExportOrders: 90 },
-//   { name: 'T10', Orders: 95, ExportOrders: 105 },
-//   { name: 'T11', Orders: 100, ExportOrders: 110 },
-//   { name: 'T12', Orders: 110, ExportOrders: 120 }
-// ]
+// Định nghĩa types (giữ nguyên như trước)
 
-const Dashboard = () => {
-  const [incom, setIncom] = useState<Incom>()
-  const [order, setOrder] = useState<AnalyticOrder>()
-  const [purchaeOrder, setPurchaseOrder] = useState<PurchaseOrdersData>()
-  const [customer, setCustomer] = useState<AnalyticCustomers>()
+type User = {
+  id: number
+  fullName: string
+}
+
+type KPIInfo = {
+  id: number
+  userId: string
+  month: number
+  year: number
+  targetRevenue: string
+  actualRevenue: string
+  targetOrders: number
+  actualOrders: number
+  kpiPercentage: string
+  status: 'pending' | 'achieved' | 'failed'
+  createdAt: string // ISO timestamp
+  updatedAt: string // ISO timestamp
+  user: User
+}
+
+type MonthlyProgress = {
+  actualRevenue: string
+  targetRevenue: string
+  actualOrders: number
+  targetOrders: number
+  revenueProgress: number
+  ordersProgress: number
+  kpiPercentage: number
+  status: 'pending' | 'achieved' | 'failed'
+}
+
+type MonthlyOrders = ExportOrder[] // Update if you have a specific structure for orders.
+
+type DataStructure = {
+  kpiInfo: KPIInfo
+  monthlyProgress: MonthlyProgress
+  monthlyOrders: MonthlyOrders
+}
+
+const SalesDashboard: React.FC = () => {
+  const [kpiData, setKPI] = useState<DataStructure | undefined>()
+
+  // Mock data cho biểu đồ theo tháng
+  const monthlyData = [
+    {
+      month: 'T1',
+      targetRevenue: 100000,
+      actualRevenue: 95000,
+      targetOrders: 100,
+      actualOrders: 90
+    },
+    {
+      month: 'T2',
+      targetRevenue: 110000,
+      actualRevenue: 105000,
+      targetOrders: 110,
+      actualOrders: 100
+    },
+    {
+      month: 'T3',
+      targetRevenue: 120000,
+      actualRevenue: 115000,
+      targetOrders: 120,
+      actualOrders: 110
+    },
+    {
+      month: 'T4',
+      targetRevenue: 130000,
+      actualRevenue: 125000,
+      targetOrders: 130,
+      actualOrders: 120
+    },
+    {
+      month: 'T5',
+      targetRevenue: 140000,
+      actualRevenue: 135000,
+      targetOrders: 140,
+      actualOrders: 130
+    },
+    { month: 'T6', targetRevenue: 150000, actualRevenue: 0, targetOrders: 150, actualOrders: 0 }
+  ]
+
+  // Placeholder data
+  // const data = {
+  //   monthlyProgress: {
+  //     actualRevenue: 135000000,
+  //     targetRevenue: 150000000,
+  //     actualOrders: 130,
+  //     targetOrders: 150,
+  //     revenueProgress: 90,
+  //     ordersProgress: 86.7,
+  //     kpiPercentage: 90,
+  //     status: true
+  //   }
+  // }
+
   useEffect(() => {
-    const getIcom = async () => {
+    const fetchSaleKPI = async () => {
       try {
-        const dataIcom = await axiosInstance.get<any, Incom>('/analytic/incom')
-        const dataOrder = await axiosInstance.get<any, AnalyticOrder>('/analytic/order')
-        const dataPurchaseOrder = await axiosInstance.get<any, PurchaseOrdersData>(
-          '/analytic/purchase-order'
-        )
-        const dataCustomer = await axiosInstance.get<any, AnalyticCustomers>('/analytic/customer')
-
-        setIncom(dataIcom)
-        setOrder(dataOrder)
-        setPurchaseOrder(dataPurchaseOrder)
-        setCustomer(dataCustomer)
+        const response = await fetch('/api/my-kpi', {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        const result = await response.json()
+        setKPI(result)
+        console.log(result)
       } catch (error) {
-        console.error('Error fetching purchase orders:', error)
+        console.error('Error fetching products or suppliers:', error)
       }
     }
-    getIcom()
+    fetchSaleKPI()
   }, [])
+
+  // Hàm format tiền tệ
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(amount)
+  }
+
+  // Hàm tạo gradient màu
+  const generateGradient = (startColor: string, endColor: string) => {
+    return (
+      <linearGradient id='colorGradient' x1='0%' y1='0%' x2='100%' y2='0%'>
+        <stop offset='0%' stopColor={startColor} />
+        <stop offset='100%' stopColor={endColor} />
+      </linearGradient>
+    )
+  }
+
   return (
-    <div className='bg-gray-100 min-h-screen'>
-      <div className='flex justify-between items-center mb-6'>
-        <h1 className='text-2xl font-bold'>Chào buổi sáng, Admin!</h1>
-        <div className='flex items-center space-x-4'>
-          <div className='text-sm text-gray-500'>01 Jan, 2024 to 31 Jan, 2024</div>
+    <div className='p-6 space-y-6 bg-gray-50'>
+      <div className='flex items-center justify-between'>
+        <h1 className='text-2xl font-bold text-gray-800'>
+          Báo cáo KPI tháng {new Date().getMonth() + 1}/{new Date().getFullYear()}
+        </h1>
+        <div className='flex items-center space-x-2 text-sm text-gray-600'>
+          <TrendingUp className='w-4 h-4' />
+          <span>Cập nhật mới nhất: {new Date().toLocaleString()}</span>
         </div>
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6'>
-        <ItemCard
-          label={'Tổng thu nhập'}
-          growth_rate={incom?.growth_rate || ''}
-          growth_direction={incom?.growth_direction || 'increase'}
-          value={incom?.current_month.formatted_income || '0'}
-        />
-        <ItemCard
-          label={'Đơn hàng'}
-          growth_rate={order?.growth_rate || ''}
-          growth_direction={order?.growth_direction || 'increase'}
-          value={order?.current_month.total_orders || '0'}
-        />
-        <ItemCard
-          label={'Nhập kho'}
-          growth_rate={purchaeOrder?.growth_rate || ''}
-          growth_direction={purchaeOrder?.growth_direction || 'increase'}
-          value={purchaeOrder?.current_month.total_orders || '0'}
-        />
-        <ItemCard
-          label={'Khách hàng'}
-          growth_rate={customer?.growth_rate || '0'}
-          growth_direction={customer?.growth_direction || 'increase'}
-          value={customer?.current_month.new_customers || '0'}
-        />
-      </div>
-
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6'>
-        <Card className='col-span-2'>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <div className='text-xl font-bold'>Doanh thu</div>
-            <div className='flex space-x-2'>
-              <Button variant='outline' size='sm'>
-                ALL
-              </Button>
-              <Button variant='outline' size='sm'>
-                1M
-              </Button>
-              <Button variant='outline' size='sm'>
-                6M
-              </Button>
-              <Button variant='outline' size='sm'>
-                1Y
-              </Button>
-            </div>
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+        {/* KPI Tổng Quan */}
+        <Card className='bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200'>
+          <CardHeader className='flex flex-row items-center justify-between'>
+            <CardTitle className='text-sm font-medium text-blue-800'>Tỉ lệ KPI đạt được</CardTitle>
+            <Target className='h-5 w-5 text-blue-600' />
           </CardHeader>
           <CardContent>
-            <div className='h-[300px]'>
-              <DynamicChart />
+            <div className='text-3xl font-bold text-blue-900'>
+              {kpiData?.monthlyProgress.kpiPercentage}%
+            </div>
+            <Progress value={kpiData?.monthlyProgress.kpiPercentage} className='mt-2 bg-blue-200' />
+          </CardContent>
+        </Card>
+
+        {/* Doanh Thu */}
+        <Card className='bg-gradient-to-r from-green-50 to-green-100 border-green-200'>
+          <CardHeader className='flex flex-row items-center justify-between'>
+            <CardTitle className='text-sm font-medium text-green-800'>Doanh Thu</CardTitle>
+            <DollarSign className='h-5 w-5 text-green-600' />
+          </CardHeader>
+          <CardContent>
+            <div className='text-2xl font-bold text-green-900'>
+              {formatCurrency(Number(kpiData?.monthlyProgress.actualRevenue || 0))}
+            </div>
+            <div className='flex items-center space-x-2 mt-2'>
+              <Progress value={kpiData?.monthlyProgress.revenueProgress} className='bg-green-200' />
+              <span className='text-sm text-green-700'>
+                {kpiData?.monthlyProgress.revenueProgress}%
+              </span>
+            </div>
+            <p className='text-xs text-green-800 mt-1'>
+              Mục tiêu: {formatCurrency(Number(kpiData?.monthlyProgress.targetRevenue || 0))}
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Số Đơn Hàng */}
+        <Card className='bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200'>
+          <CardHeader className='flex flex-row items-center justify-between'>
+            <CardTitle className='text-sm font-medium text-purple-800'>Số Đơn Hàng</CardTitle>
+            <ShoppingCart className='h-5 w-5 text-purple-600' />
+          </CardHeader>
+          <CardContent>
+            <div className='text-2xl font-bold text-purple-900'>
+              {kpiData?.monthlyProgress.actualOrders}/{kpiData?.monthlyProgress.targetOrders}
+            </div>
+            <div className='flex items-center space-x-2 mt-2'>
+              <Progress value={kpiData?.monthlyProgress.ordersProgress} className='bg-purple-200' />
+              <span className='text-sm text-purple-700'>
+                {kpiData?.monthlyProgress.ordersProgress}%
+              </span>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-        <TopProductsTable />
-        <EmployeeTable />
-      </div> */}
+      {/* Biểu đồ thống kê theo tháng */}
+      <Card className='mt-6'>
+        <CardHeader>
+          <CardTitle className='text-gray-800'>Biểu đồ KPI theo tháng</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width='100%' height={300}>
+            <LineChart data={monthlyData}>
+              <defs>
+                {generateGradient('#3b82f6', '#2563eb')}
+                {generateGradient('#22c55e', '#16a34a')}
+              </defs>
+              <CartesianGrid strokeDasharray='3 3' stroke='#e0e0e0' />
+              <XAxis dataKey='month' stroke='#666' />
+              <YAxis stroke='#666' />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: 'white',
+                  border: '1px solid #ccc',
+                  borderRadius: '8px'
+                }}
+                labelClassName='font-bold'
+                formatter={(value, name) => {
+                  if (name.includes('Revenue')) {
+                    return [formatCurrency(Number(value)), name]
+                  }
+                  return [value, name]
+                }}
+              />
+              <Legend />
+              <Line
+                type='monotone'
+                dataKey='targetRevenue'
+                stroke='url(#colorGradient)'
+                strokeWidth={3}
+                dot={{ strokeWidth: 2, r: 5 }}
+                activeDot={{ r: 8 }}
+              />
+              <Line
+                type='monotone'
+                dataKey='actualRevenue'
+                stroke='url(#colorGradient)'
+                strokeWidth={3}
+                strokeDasharray='5 5'
+                dot={{ strokeWidth: 2, r: 5 }}
+                activeDot={{ r: 8 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
     </div>
   )
 }
 
-export default Dashboard
+export default SalesDashboard

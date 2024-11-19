@@ -190,6 +190,7 @@ export default function CustomerManagement() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Mã KH/Công ty</TableHead>
                 <TableHead>Tên KH/Công ty</TableHead>
                 <TableHead>Liên hệ</TableHead>
                 <TableHead>Email</TableHead>
@@ -204,6 +205,7 @@ export default function CustomerManagement() {
             <TableBody>
               {filteredCustomers.map((customer) => (
                 <TableRow key={customer.id}>
+                  <TableCell className='font-medium'>{customer.code}</TableCell>
                   <TableCell className='font-medium'>{customer.fullName}</TableCell>
                   <TableCell>{customer.contract || 'chưa có'}</TableCell>
                   <TableCell>{customer.email || 'chưa có'}</TableCell>

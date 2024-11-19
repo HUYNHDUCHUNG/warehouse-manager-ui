@@ -105,6 +105,7 @@ const ProductPage = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>STT</TableHead>
+                <TableHead>Mã sản phẩm</TableHead>
                 <TableHead>Tên sản phẩm</TableHead>
                 <TableHead>Loại sản phẩm</TableHead>
                 {/* <TableHead>Mô tả</TableHead> */}
@@ -122,6 +123,7 @@ const ProductPage = () => {
               {filteredProducts.map((product, index) => (
                 <TableRow key={product.id}>
                   <TableCell>{index + 1}</TableCell>
+                  <TableCell>{product.code}</TableCell>
                   <TableCell>{product.product_name}</TableCell>
                   <TableCell>{product.category.name}</TableCell>
                   {/* <TableCell className=''>{product.description}</TableCell> */}

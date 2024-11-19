@@ -1,97 +1,228 @@
+'use client'
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
-import axios from 'axios'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Select } from '@/components/ui/select'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
+import axiosInstance from '@/config/axiosConfig'
 
-// API functions
-const getKPIData = async (userId, startMonth, startYear, endMonth, endYear) => {
-  const response = await axios.get(
-    `/api/kpi?userId=${userId}&startMonth=${startMonth}&startYear=${startYear}&endMonth=${endMonth}&endYear=${endYear}`
-  )
-  return response.data
+type Summary = {
+  totalEmployees: number
+  achievedTarget: number
+  pending: number
+  failed: number
+  totalRevenue: number
+  totalOrders: number
 }
 
-const updateKPI = async (kpiData) => {
-  await axios.put('/api/kpi', kpiData)
+type KPIInfo = {
+  targetRevenue: number
+  actualRevenue: number
+  targetOrders: number
+  actualOrders: number
+  kpiPercentage: number
+  status: 'pending' | 'achieved' | 'failed'
 }
 
-// KPI Dashboard component
+type MonthlyProgress = {
+  revenueProgress: number
+  ordersProgress: number
+}
+
+type EmployeeProgress = {
+  userId: string
+  userName: string
+  email: string
+  kpiInfo: KPIInfo
+  monthlyProgress: MonthlyProgress
+}
+
+type Data = {
+  summary: Summary
+  employeesProgress: EmployeeProgress[]
+}
+
 const KPIDashboard = () => {
-  const { userId } = useParams()
-  const [kpiData, setKPIData] = useState([])
+  const [month, setMonth] = useState(new Date().getMonth() + 1)
+  const [year, setYear] = useState(new Date().getFullYear())
+  const [kpiData, setKpiData] = useState<Data>()
+  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    const fetchKPIData = async () => {
-      const currentDate = new Date()
-      const kpiData = await getKPIData(
-        userId,
-        currentDate.getMonth() + 1,
-        currentDate.getFullYear() - 1,
-        currentDate.getMonth() + 1,
-        currentDate.getFullYear()
-      )
-      setKPIData(kpiData)
-    }
-    fetchKPIData()
-  }, [userId])
+  // Tạo options cho select tháng và năm
+  const months = Array.from({ length: 12 }, (_, i) => ({
+    value: i + 1,
+    label: `Tháng ${i + 1}`
+  }))
 
-  const handleKPIUpdate = async (kpiItem) => {
-    await updateKPI(kpiItem)
-    setKPIData((prevData) => prevData.map((item) => (item.id === kpiItem.id ? kpiItem : item)))
+  const years = Array.from({ length: 5 }, (_, i) => ({
+    value: new Date().getFullYear() - i,
+    label: `Năm ${new Date().getFullYear() - i}`
+  }))
+
+  // Format số tiền
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(value)
   }
 
+  // Lấy màu cho status
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'achieved':
+        return 'bg-green-100 text-green-800'
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'failed':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  // Lấy dữ liệu KPI
+  const fetchKPIData = async () => {
+    try {
+      setLoading(true)
+      const response = await axiosInstance(`/kpi/report-kpi?month=${month}&year=${year}`)
+      // const data = await response.json()
+      console.log(response)
+      setKpiData(response)
+    } catch (error) {
+      console.error('Error fetching KPI data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchKPIData()
+  }, [month, year])
+
+  if (!kpiData) return <div>Loading...</div>
+
   return (
-    <Card className='w-full max-w-4xl'>
-      <CardHeader>
-        <CardTitle>KPI Dashboard</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <LineChart width={600} height={400} data={kpiData}>
-          <XAxis dataKey='month' />
-          <YAxis />
-          <CartesianGrid strokeDasharray='3 3' />
-          <Tooltip />
-          <Legend />
-          <Line type='monotone' dataKey='kpiPercentage' stroke='#8884d8' />
-        </LineChart>
-        <table className='w-full mt-4 border-collapse'>
-          <thead>
-            <tr>
-              <th className='p-2 border'>Month</th>
-              <th className='p-2 border'>Target Revenue</th>
-              <th className='p-2 border'>Actual Revenue</th>
-              <th className='p-2 border'>Target Orders</th>
-              <th className='p-2 border'>Actual Orders</th>
-              <th className='p-2 border'>KPI %</th>
-              <th className='p-2 border'>Status</th>
-              <th className='p-2 border'>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {kpiData.map((item) => (
-              <tr key={item.id}>
-                <td className='p-2 border'>{`${item.month}/${item.year}`}</td>
-                <td className='p-2 border'>{item.targetRevenue.toLocaleString()}</td>
-                <td className='p-2 border'>{item.actualRevenue.toLocaleString()}</td>
-                <td className='p-2 border'>{item.targetOrders}</td>
-                <td className='p-2 border'>{item.actualOrders}</td>
-                <td className='p-2 border'>{item.kpiPercentage.toFixed(2)}%</td>
-                <td className='p-2 border'>{item.status}</td>
-                <td className='p-2 border'>
-                  <button
-                    className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded'
-                    onClick={() => handleKPIUpdate(item)}
-                  >
-                    Update
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </CardContent>
-    </Card>
+    <div className='container mx-auto p-6'>
+      {/* Filters */}
+      <div className='flex gap-4 mb-6'>
+        <Select value={month} onValueChange={setMonth} options={months} className='w-40' />
+        <Select value={year} onValueChange={setYear} options={years} className='w-40' />
+      </div>
+
+      {/* Summary Cards */}
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6'>
+        <Card>
+          <CardHeader>
+            <CardTitle>Tổng nhân viên</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className='text-2xl font-bold'>{kpiData.summary.totalEmployees}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Đạt chỉ tiêu</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className='text-2xl font-bold text-green-600'>
+              {kpiData.summary.achievedTarget}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Tổng doanh thu</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className='text-2xl font-bold'>{formatCurrency(kpiData.summary.totalRevenue)}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Tổng đơn hàng</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className='text-2xl font-bold'>{kpiData.summary.totalOrders}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* KPI Chart */}
+      <Card className='mb-6'>
+        <CardHeader>
+          <CardTitle>Biểu đồ KPI theo nhân viên</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <BarChart
+            width={800}
+            height={300}
+            data={kpiData.employeesProgress}
+            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray='3 3' />
+            <XAxis dataKey='userName' />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey='kpiInfo.kpiPercentage' name='KPI %' fill='#8884d8' />
+          </BarChart>
+        </CardContent>
+      </Card>
+
+      {/* Detailed Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Chi tiết KPI nhân viên</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nhân viên</TableHead>
+                <TableHead>Doanh số</TableHead>
+                <TableHead>Số đơn</TableHead>
+                <TableHead>KPI</TableHead>
+                <TableHead>Trạng thái</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {kpiData.employeesProgress.map((employee) => (
+                <TableRow key={employee.userId}>
+                  <TableCell className='font-medium'>{employee.userName}</TableCell>
+                  <TableCell>
+                    {formatCurrency(employee.kpiInfo.actualRevenue)}
+                    <div className='text-sm text-gray-500'>
+                      Target: {formatCurrency(employee.kpiInfo.targetRevenue)}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {employee.kpiInfo.actualOrders}
+                    <div className='text-sm text-gray-500'>
+                      Target: {employee.kpiInfo.targetOrders}
+                    </div>
+                  </TableCell>
+                  <TableCell>{employee.kpiInfo.kpiPercentage}%</TableCell>
+                  <TableCell>
+                    <Badge className={getStatusColor(employee.kpiInfo.status)}>
+                      {employee.kpiInfo.status.toUpperCase()}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 

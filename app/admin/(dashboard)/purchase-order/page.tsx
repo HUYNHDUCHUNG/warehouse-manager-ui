@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { ChangeEventHandler, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -25,7 +25,8 @@ const PurchaseOrderPage = () => {
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]) // Sử dụng mảng PurchaseOrder
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-
+  const [file, setFile] = useState<File | undefined>()
+  const fileRef = useRef<HTMLInputElement>(null)
   useEffect(() => {
     const getPurchaseOrders = async () => {
       try {
@@ -42,6 +43,61 @@ const PurchaseOrderPage = () => {
     }
     getPurchaseOrders()
   }, [])
+
+  const handleImport = () => {
+    fileRef.current?.click()
+    console.log(file)
+  }
+  const handleChangeFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+
+    // Kiểm tra có file được chọn không
+    if (!file) {
+      console.log('No file selected')
+      return
+    }
+
+    // Log thông tin file
+    console.log('File selected:', {
+      name: file.name,
+      type: file.type,
+      size: file.size
+    })
+
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
+      console.log('Sending request...')
+      const response = await axiosInstance.post('/purchase-order/import-file', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+
+      console.log('Response:', response.data)
+
+      // Xử lý response thành công
+      if (response.data.success) {
+        // Hiển thị thông báo thành công
+        console.log('Import successful:', response.data.data)
+      }
+    } catch (error) {
+      // Log chi tiết về lỗi
+      console.error('Import error:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      })
+
+      // Hiển thị thông báo lỗi cho người dùng
+      if (error.response?.status === 400) {
+        console.error('File validation error:', error.response.data.message)
+      } else {
+        console.error('Server error:', error.message)
+      }
+    }
+  }
 
   const onDelete = async (id: number) => {
     try {
@@ -74,9 +130,20 @@ const PurchaseOrderPage = () => {
       <div className='bg-white p-4 rounded-xl'>
         <div className='flex justify-between mb-4'>
           <h1 className='text-2xl font-bold'>Danh sách đơn hàng nhập</h1>
-          <Link href={'/admin/purchase-order/create'}>
-            <Button>Tạo đơn nhập mới</Button>
-          </Link>
+          <div className='flex gap-2'>
+            <Link href={'/admin/purchase-order/create'}>
+              <Button>Tạo đơn nhập mới</Button>
+            </Link>
+
+            <Button onClick={handleImport}>Import</Button>
+            <Input
+              className='hidden'
+              type='file'
+              hidden
+              ref={fileRef}
+              onChange={handleChangeFile}
+            />
+          </div>
         </div>
         <div className='flex items-center py-4'>
           <div className='relative flex-1'>

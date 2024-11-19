@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
@@ -24,6 +25,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Logo } from './logo'
 import { cn } from '@/lib/utils'
+import axiosInstance from '@/config/axiosConfig'
 
 interface SubMenuItem {
   icon: React.ReactNode
@@ -57,6 +59,7 @@ const MenuItem = ({
   subItemActive = false
 }: MenuItemProps) => {
   const [isOpen, setIsOpen] = useState(subItemActive) // Open submenu if a subitem is active
+  // Open submenu if a subitem is active
 
   if (!hasSubmenu) {
     return (
@@ -130,7 +133,19 @@ const MenuItem = ({
 
 export default function Sidebar() {
   const pathname = usePathname()
-
+  const [quantityImportSuggestion, setQuantityImportSuggestion] = useState(0)
+  useEffect(() => {
+    const getQuantityImportSuggestion = async () => {
+      try {
+        const data = await axiosInstance.get<any, any>('/import-suggestion/quantity')
+        setQuantityImportSuggestion(data)
+        console.log(data)
+      } catch (error) {
+        console.error('Error fetching purchase orders:', error)
+      }
+    }
+    getQuantityImportSuggestion()
+  }, [])
   const menuItems: MenuItemProps[] = [
     {
       icon: <LayoutDashboard className='w-4 h-4' />,
@@ -183,6 +198,11 @@ export default function Sidebar() {
           icon: <Minus className='w-4 h-4' />,
           label: 'Báo cáo doanh thu',
           href: '/admin/reports/revenue'
+        },
+        {
+          icon: <Minus className='w-4 h-4' />,
+          label: 'Báo cáo KPI',
+          href: '/admin/kpi'
         }
       ]
     },
@@ -192,7 +212,7 @@ export default function Sidebar() {
       href: '/admin/suggestion-history',
       hasSubmenu: false,
       hasChip: true,
-      chipText: '1'
+      chipText: `${quantityImportSuggestion}`
     },
     {
       icon: <Users className='w-4 h-4' />,

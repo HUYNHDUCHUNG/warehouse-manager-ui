@@ -67,7 +67,7 @@ const ImportSuggestionHistory = () => {
         </div>
         <div className='text-right'>
           <p>Số hóa đơn: {item.id}</p>
-          <p>Đề xuất bởi: {item.user.fullName}</p>
+          <p>Đề xuất bởi: {item?.user?.fullName || 'Hệ thống'}</p>
         </div>
       </div>
 

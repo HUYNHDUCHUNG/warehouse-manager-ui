@@ -153,7 +153,7 @@ const EditProduct = () => {
                   )}
                 />
               </div>
-              <div className='w-[50%] gap-4'>
+              <div className='w-[50%] gap-4 flex flex-col'>
                 <FormField
                   control={form.control}
                   name='category_id'
