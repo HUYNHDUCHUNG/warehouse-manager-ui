@@ -14,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import axiosInstance from '@/config/axiosConfig'
 import { ExportOrder } from '@/@types'
 
-import { Search, Trash } from 'lucide-react'
+import { CheckCircle, List, Search, Trash } from 'lucide-react'
 import Link from 'next/link'
 import AlertDialogComponent from '@/components/alert-dialog'
 import { formatCurrency } from '@/lib/utils'
@@ -145,23 +145,26 @@ const ExportOrderPage = () => {
                       cancelText='Hủy bỏ'
                       onConfirm={() => onDelete(exportOrder.id)} // Thay đổi hàm xóa thành onDeletePurchase
                       triggerElement={
-                        <Button className='bg-red-600 hover:bg-red-500'>
-                          <Trash size={14} />
+                        <Button variant='destructive' size='icon'>
+                          <Trash className='w-4 h-4' />
                         </Button>
                       }
                     />
 
                     {exportOrder?.id && (
                       <Link href={`/admin/export-order/detail/${exportOrder.id}`}>
-                        <Button className='bg-sky-600 hover:bg-sky-500'>Detail</Button>
+                        <Button variant='secondary' size='icon'>
+                          <List className='w-4 h-4' />
+                        </Button>
                       </Link>
                     )}
                     {exportOrder.isFullyAvailable && !exportOrder.status && (
                       <Button
                         onClick={() => onComfirm(exportOrder.id)}
-                        className='bg-sky-600 hover:bg-sky-500'
+                        variant='default'
+                        size='icon'
                       >
-                        Xác nhận
+                        <CheckCircle className='w-4 h-4' />
                       </Button>
                     )}
                   </TableCell>

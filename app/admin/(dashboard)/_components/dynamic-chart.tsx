@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import React, { useEffect, useState } from 'react'
 import axiosInstance from '@/config/axiosConfig'
@@ -27,12 +28,10 @@ const DynamicChart: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get<ChartProps>('/analytic/order-statistics')
+        const response = await axiosInstance.get<any, ChartProps>('/analytic/order-statistics')
         console.log(response)
         if (response.success) {
           setChartData(response.data)
-        } else {
-          throw new Error(response.data.message)
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch data')
@@ -60,8 +59,8 @@ const DynamicChart: React.FC = () => {
               contentStyle={{ fontSize: 12 }}
               formatter={(value: number) => [`${value}`, '']}
             />
-            <Bar dataKey='Orders' fill='#8884d8' name='Tổng đơn hàng' />
-            <Bar dataKey='ExportOrder' fill='#82ca9d' name='Đơn xuất' />
+            <Bar dataKey='Orders' fill='#8884d8' name='Orders' />
+            <Bar dataKey='ExportOrder' fill='#82ca9d' name='ExportOrder' />
           </BarChart>
         </ResponsiveContainer>
       )

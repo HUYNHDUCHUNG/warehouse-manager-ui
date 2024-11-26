@@ -55,12 +55,33 @@ const Dashboard = () => {
     }
     getIcom()
   }, [])
+  function getStartOfMonthToToday() {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = now.getMonth()
+
+    // Ngày đầu tháng
+    const startOfMonth = new Date(year, month, 1)
+
+    // Ngày hiện tại
+    const today = new Date(year, month, now.getDate())
+
+    // Chuyển sang chuỗi để phù hợp với ReactNode
+    return {
+      startOfMonth: startOfMonth.toLocaleDateString(),
+      today: today.toLocaleDateString()
+    }
+  }
+
+  const { startOfMonth, today } = getStartOfMonthToToday()
   return (
     <div className='bg-gray-100 min-h-screen'>
       <div className='flex justify-between items-center mb-6'>
         <h1 className='text-2xl font-bold'>Chào buổi sáng, Admin!</h1>
         <div className='flex items-center space-x-4'>
-          <div className='text-sm text-gray-500'>01 Jan, 2024 to 31 Jan, 2024</div>
+          <div className='text-sm text-gray-500'>
+            {startOfMonth} đến {today}
+          </div>
         </div>
       </div>
 
@@ -98,8 +119,8 @@ const Dashboard = () => {
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6'>
         <Card className='col-span-2'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <div className='text-xl font-bold'>Doanh thu</div>
-            <div className='flex space-x-2'>
+            <div className='text-xl font-bold'>Thông kê nhập và xuất kho</div>
+            {/* <div className='flex space-x-2'>
               <Button variant='outline' size='sm'>
                 ALL
               </Button>
@@ -112,7 +133,7 @@ const Dashboard = () => {
               <Button variant='outline' size='sm'>
                 1Y
               </Button>
-            </div>
+            </div> */}
           </CardHeader>
           <CardContent>
             <div className='h-[300px]'>

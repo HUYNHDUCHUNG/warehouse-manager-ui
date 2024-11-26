@@ -171,7 +171,7 @@ const SalesDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className='text-3xl font-bold text-blue-900'>
-              {kpiData?.monthlyProgress.kpiPercentage}%
+              {kpiData?.monthlyProgress.kpiPercentage || 0}%
             </div>
             <Progress value={kpiData?.monthlyProgress.kpiPercentage} className='mt-2 bg-blue-200' />
           </CardContent>

@@ -1,7 +1,8 @@
 'use client'
 
-import { ChangeEventHandler, useEffect, useRef, useState } from 'react'
+import { PurchaseOrder } from '@/@types'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -10,16 +11,15 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { Skeleton } from '@/components/ui/skeleton'
 import axiosInstance from '@/config/axiosConfig'
-import { PurchaseOrder } from '@/@types'
+import { useEffect, useRef, useState } from 'react'
 
-import { Search, Trash } from 'lucide-react'
-import Link from 'next/link'
 import AlertDialogComponent from '@/components/alert-dialog'
-import { formatCurrency } from '@/lib/utils'
 import BreadcrumbComponent from '@/components/breadcrumb'
 import { Input } from '@/components/ui/input'
+import { formatCurrency } from '@/lib/utils'
+import { Printer, Search, Trash } from 'lucide-react'
+import Link from 'next/link'
 
 const PurchaseOrderPage = () => {
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]) // Sử dụng mảng PurchaseOrder
@@ -194,8 +194,8 @@ const PurchaseOrderPage = () => {
                       cancelText='Hủy bỏ'
                       onConfirm={() => onDelete(order.id)} // Thay đổi hàm xóa thành onDeletePurchase
                       triggerElement={
-                        <Button className='bg-red-600 hover:bg-red-500'>
-                          <Trash size={14} />
+                        <Button variant='destructive' size='icon'>
+                          <Trash className='w-4 h-4' />
                         </Button>
                       }
                     />
@@ -208,9 +208,10 @@ const PurchaseOrderPage = () => {
                             'height=600,width=800'
                           )
                         }
-                        className='bg-sky-600 hover:bg-sky-500'
+                        variant='secondary'
+                        size='icon'
                       >
-                        Invoice
+                        <Printer className='w-4 h-4' />
                       </Button>
                     )}
                   </TableCell>

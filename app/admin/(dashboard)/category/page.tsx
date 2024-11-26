@@ -156,7 +156,7 @@ const CategoryPage = () => {
                 <TableHead>Tên danh mục</TableHead>
                 <TableHead>Ngày tạo</TableHead>
                 <TableHead>Ngày cập nhật</TableHead>
-                <TableHead>Hành động</TableHead>
+                <TableHead className='text-end'>Hành động</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -166,7 +166,7 @@ const CategoryPage = () => {
                   <TableCell>{category.name}</TableCell>
                   <TableCell>{new Date(category.createdAt).toLocaleDateString('vi-VN')}</TableCell>
                   <TableCell>{new Date(category.updatedAt).toLocaleDateString('vi-VN')}</TableCell>
-                  <TableCell className='flex items-center gap-2'>
+                  <TableCell className='flex items-center gap-2 justify-end'>
                     <AlertDialogComponent
                       title='Xóa danh mục'
                       description={`Bạn có chắc chắn muốn xóa danh mục "${category.name}"? Hành động này không thể hoàn tác.`}

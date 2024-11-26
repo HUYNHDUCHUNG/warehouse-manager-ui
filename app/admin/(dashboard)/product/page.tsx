@@ -143,15 +143,15 @@ const ProductPage = () => {
                       cancelText='Hủy bỏ'
                       onConfirm={() => onDeleteProduct(product.id)}
                       triggerElement={
-                        <Button className=' bg-red-600 hover:bg-red-500'>
-                          <Trash size={14} />
+                        <Button variant='destructive' size='icon'>
+                          <Trash className='w-4 h-4' />
                         </Button>
                       }
                     />
                     {product?.id && (
                       <Link href={`/admin/product/edit/${product.id}`}>
-                        <Button className=' bg-sky-600 hover:bg-sky-500'>
-                          <Pencil size={14} />
+                        <Button variant='secondary' size='icon'>
+                          <Pencil className='w-4 h-4' />
                         </Button>
                       </Link>
                     )}
