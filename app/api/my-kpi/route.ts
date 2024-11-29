@@ -67,7 +67,7 @@ export async function GET() {
         }
 
         const data = (await response.json()).data as DataStructure
-        console.log(data)
+        // console.log(data)
         return Response.json(data)
     } catch (error) {
         console.error('Error get kpi:', error)

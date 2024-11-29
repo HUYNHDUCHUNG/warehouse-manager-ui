@@ -145,6 +145,12 @@ export default function Sidebar() {
       hasSubmenu: false
     },
     {
+      icon: <Users className='w-4 h-4' />,
+      label: 'Quản lý khách hàng',
+      href: '/sale/customer',
+      hasSubmenu: false
+    },
+    {
       icon: <BaggageClaim className='w-4 h-4' />,
       label: 'Quản lý đơn hàng',
       href: '/sale/export-order',

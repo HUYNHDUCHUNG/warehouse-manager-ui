@@ -42,8 +42,20 @@ import { CheckCircle2 } from 'lucide-react'
 
 const productSchema = z.object({
   productId: z.string().min(1, 'Chọn sản phẩm'),
-  unitPrice: z.string().min(1, 'Nhập đơn giá'),
-  quantity: z.string().min(1, 'Nhập số lượng'),
+  unitPrice: z.string().refine(
+    (value) => {
+      const numValue = parseFloat(value)
+      return !isNaN(numValue) && numValue > 0
+    },
+    { message: 'Đơn giá phải lớn hơn 0' }
+  ),
+  quantity: z.string().refine(
+    (value) => {
+      const numValue = parseInt(value)
+      return !isNaN(numValue) && numValue > 0
+    },
+    { message: 'Số lượng phải lớn hơn 0' }
+  ),
   totalPrice: z.string().min(1, 'Tổng giá không hợp lệ')
 })
 
@@ -51,7 +63,7 @@ const formSchema = z.object({
   supplier_id: z.number().min(1, 'Chọn nhà cung cấp'),
   note: z.string().optional(),
   dateImport: z.string(),
-  products: z.array(productSchema)
+  products: z.array(productSchema).min(1, 'Cần ít nhất một sản phẩm')
 })
 
 const CreatePurchaseOrder = () => {

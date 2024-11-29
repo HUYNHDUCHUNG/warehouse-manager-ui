@@ -23,6 +23,8 @@ export interface User {
   contract: string
   status: boolean
   password?: string
+  targetRevenue?: number
+  targetOrders?: number
 }
 
 // Base schema without password
@@ -32,7 +34,10 @@ const baseSchema = {
   phone: z.string().min(10, 'Phone number must be at least 10 digits'),
   role: z.enum(['AD', 'SALE', 'WAREHOUSE']).default('AD'),
   contract: z.string().optional(),
-  status: z.boolean().default(true)
+  status: z.boolean().default(true),
+  // Add optional KPI fields for sales with validation
+  targetRevenue: z.number().positive('Mục tiêu doanh thu phải lớn hơn 0').optional(),
+  targetOrders: z.number().positive('Mục tiêu đơn hàng phải lớn hơn 0').optional()
 }
 
 // Schema for add mode - password required
@@ -66,7 +71,9 @@ const defaultFormData: Partial<User> = {
   role: 'AD',
   contract: '',
   status: true,
-  password: ''
+  password: '',
+  targetRevenue: undefined,
+  targetOrders: undefined
 }
 
 export function UserDialog({ isOpen, onOpenChange, onSubmit, initialData, mode }: UserDialogProps) {
@@ -101,10 +108,22 @@ export function UserDialog({ isOpen, onOpenChange, onSubmit, initialData, mode }
       ...data,
       id: initialData?.id,
       // Nếu là edit mode và password rỗng, không gửi password
-      ...(mode === 'edit' && !data.password && { password: undefined })
+      ...(mode === 'edit' && !data.password && { password: undefined }),
+      // Chỉ gửi targetRevenue và targetOrders nếu role là SALE
+      ...(data.role === 'SALE'
+        ? {
+            targetRevenue: data.targetRevenue,
+            targetOrders: data.targetOrders
+          }
+        : {
+            targetRevenue: undefined,
+            targetOrders: undefined
+          })
     }
     onSubmit(userData)
   }
+
+  const currentRole = watch('role')
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -186,6 +205,41 @@ export function UserDialog({ isOpen, onOpenChange, onSubmit, initialData, mode }
                   <p className='text-sm text-red-500'>{errors.contract.message}</p>
                 )}
               </div>
+
+              {/* KPI Fields for Sales Role */}
+              {currentRole === 'SALE' && (
+                <>
+                  <div className='space-y-2'>
+                    <Label>Mục Tiêu Doanh Thu (VND)</Label>
+                    <Input
+                      type='number'
+                      {...register('targetRevenue', {
+                        setValueAs: (v) => (v === '' ? undefined : Number(v))
+                      })}
+                      placeholder='Nhập mục tiêu doanh thu'
+                      aria-invalid={errors.targetRevenue ? 'true' : 'false'}
+                    />
+                    {errors.targetRevenue && (
+                      <p className='text-sm text-red-500'>{errors.targetRevenue.message}</p>
+                    )}
+                  </div>
+
+                  <div className='space-y-2'>
+                    <Label>Mục Tiêu Số Đơn Hàng</Label>
+                    <Input
+                      type='number'
+                      {...register('targetOrders', {
+                        setValueAs: (v) => (v === '' ? undefined : Number(v))
+                      })}
+                      placeholder='Nhập mục tiêu số đơn hàng'
+                      aria-invalid={errors.targetOrders ? 'true' : 'false'}
+                    />
+                    {errors.targetOrders && (
+                      <p className='text-sm text-red-500'>{errors.targetOrders.message}</p>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </div>
 

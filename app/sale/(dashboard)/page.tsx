@@ -4,16 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { DollarSign, ShoppingCart, Target, TrendingUp } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis
-} from 'recharts'
+import SalesKPIChart from './_components/sale-kpi-chart'
 
 // Định nghĩa types (giữ nguyên như trước)
 
@@ -61,44 +52,44 @@ const SalesDashboard: React.FC = () => {
   const [kpiData, setKPI] = useState<DataStructure | undefined>()
 
   // Mock data cho biểu đồ theo tháng
-  const monthlyData = [
-    {
-      month: 'T1',
-      targetRevenue: 100000,
-      actualRevenue: 95000,
-      targetOrders: 100,
-      actualOrders: 90
-    },
-    {
-      month: 'T2',
-      targetRevenue: 110000,
-      actualRevenue: 105000,
-      targetOrders: 110,
-      actualOrders: 100
-    },
-    {
-      month: 'T3',
-      targetRevenue: 120000,
-      actualRevenue: 115000,
-      targetOrders: 120,
-      actualOrders: 110
-    },
-    {
-      month: 'T4',
-      targetRevenue: 130000,
-      actualRevenue: 125000,
-      targetOrders: 130,
-      actualOrders: 120
-    },
-    {
-      month: 'T5',
-      targetRevenue: 140000,
-      actualRevenue: 135000,
-      targetOrders: 140,
-      actualOrders: 130
-    },
-    { month: 'T6', targetRevenue: 150000, actualRevenue: 0, targetOrders: 150, actualOrders: 0 }
-  ]
+  // const monthlyData = [
+  //   {
+  //     month: 'T1',
+  //     targetRevenue: 100000,
+  //     actualRevenue: 95000,
+  //     targetOrders: 100,
+  //     actualOrders: 90
+  //   },
+  //   {
+  //     month: 'T2',
+  //     targetRevenue: 110000,
+  //     actualRevenue: 105000,
+  //     targetOrders: 110,
+  //     actualOrders: 100
+  //   },
+  //   {
+  //     month: 'T3',
+  //     targetRevenue: 120000,
+  //     actualRevenue: 115000,
+  //     targetOrders: 120,
+  //     actualOrders: 110
+  //   },
+  //   {
+  //     month: 'T4',
+  //     targetRevenue: 130000,
+  //     actualRevenue: 125000,
+  //     targetOrders: 130,
+  //     actualOrders: 120
+  //   },
+  //   {
+  //     month: 'T5',
+  //     targetRevenue: 140000,
+  //     actualRevenue: 135000,
+  //     targetOrders: 140,
+  //     actualOrders: 130
+  //   },
+  //   { month: 'T6', targetRevenue: 150000, actualRevenue: 0, targetOrders: 150, actualOrders: 0 }
+  // ]
 
   // Placeholder data
   // const data = {
@@ -141,14 +132,14 @@ const SalesDashboard: React.FC = () => {
   }
 
   // Hàm tạo gradient màu
-  const generateGradient = (startColor: string, endColor: string) => {
-    return (
-      <linearGradient id='colorGradient' x1='0%' y1='0%' x2='100%' y2='0%'>
-        <stop offset='0%' stopColor={startColor} />
-        <stop offset='100%' stopColor={endColor} />
-      </linearGradient>
-    )
-  }
+  // const generateGradient = (startColor: string, endColor: string) => {
+  //   return (
+  //     <linearGradient id='colorGradient' x1='0%' y1='0%' x2='100%' y2='0%'>
+  //       <stop offset='0%' stopColor={startColor} />
+  //       <stop offset='100%' stopColor={endColor} />
+  //     </linearGradient>
+  //   )
+  // }
 
   return (
     <div className='p-6 space-y-6 bg-gray-50'>
@@ -158,7 +149,7 @@ const SalesDashboard: React.FC = () => {
         </h1>
         <div className='flex items-center space-x-2 text-sm text-gray-600'>
           <TrendingUp className='w-4 h-4' />
-          <span>Cập nhật mới nhất: {new Date().toLocaleString()}</span>
+          <span>Cập nhật mới nhất: {new Date().toString()}</span>
         </div>
       </div>
 
@@ -171,9 +162,12 @@ const SalesDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className='text-3xl font-bold text-blue-900'>
-              {kpiData?.monthlyProgress.kpiPercentage || 0}%
+              {kpiData?.monthlyProgress?.kpiPercentage || 0}%
             </div>
-            <Progress value={kpiData?.monthlyProgress.kpiPercentage} className='mt-2 bg-blue-200' />
+            <Progress
+              value={kpiData?.monthlyProgress?.kpiPercentage}
+              className='mt-2 bg-blue-200'
+            />
           </CardContent>
         </Card>
 
@@ -185,16 +179,19 @@ const SalesDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold text-green-900'>
-              {formatCurrency(Number(kpiData?.monthlyProgress.actualRevenue || 0))}
+              {formatCurrency(Number(kpiData?.monthlyProgress?.actualRevenue || 0))}
             </div>
             <div className='flex items-center space-x-2 mt-2'>
-              <Progress value={kpiData?.monthlyProgress.revenueProgress} className='bg-green-200' />
+              <Progress
+                value={kpiData?.monthlyProgress?.revenueProgress}
+                className='bg-green-200'
+              />
               <span className='text-sm text-green-700'>
-                {kpiData?.monthlyProgress.revenueProgress}%
+                {kpiData?.monthlyProgress?.revenueProgress}%
               </span>
             </div>
             <p className='text-xs text-green-800 mt-1'>
-              Mục tiêu: {formatCurrency(Number(kpiData?.monthlyProgress.targetRevenue || 0))}
+              Mục tiêu: {formatCurrency(Number(kpiData?.monthlyProgress?.targetRevenue || 0))}
             </p>
           </CardContent>
         </Card>
@@ -207,10 +204,13 @@ const SalesDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold text-purple-900'>
-              {kpiData?.monthlyProgress.actualOrders}/{kpiData?.monthlyProgress.targetOrders}
+              {kpiData?.monthlyProgress.actualOrders}/{kpiData?.monthlyProgress?.targetOrders}
             </div>
             <div className='flex items-center space-x-2 mt-2'>
-              <Progress value={kpiData?.monthlyProgress.ordersProgress} className='bg-purple-200' />
+              <Progress
+                value={kpiData?.monthlyProgress?.ordersProgress}
+                className='bg-purple-200'
+              />
               <span className='text-sm text-purple-700'>
                 {kpiData?.monthlyProgress.ordersProgress}%
               </span>
@@ -219,8 +219,10 @@ const SalesDashboard: React.FC = () => {
         </Card>
       </div>
 
+      <SalesKPIChart />
+
       {/* Biểu đồ thống kê theo tháng */}
-      <Card className='mt-6'>
+      {/* <Card className='mt-6'>
         <CardHeader>
           <CardTitle className='text-gray-800'>Biểu đồ KPI theo tháng</CardTitle>
         </CardHeader>
@@ -269,7 +271,7 @@ const SalesDashboard: React.FC = () => {
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   )
 }

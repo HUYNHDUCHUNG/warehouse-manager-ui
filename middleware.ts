@@ -5,6 +5,7 @@ export function middleware(request: NextRequest) {
     const token = request.cookies.get('token')?.value
     const role = request.cookies.get('role')?.value
     // Nếu đã đăng nhập và cố truy cập trang login
+
     if (token && request.nextUrl.pathname === '/login') {
         // Redirect về trang chủ hoặc dashboard tương ứng với role
         if (role === 'AD') {

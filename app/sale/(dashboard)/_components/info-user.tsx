@@ -20,7 +20,7 @@ export default async function InfoUser() {
       </Avatar>
       <div className='hidden md:block text-left min-w-[90px]'>
         <div className='font-medium'>{user.fullName}</div>
-        <div className='text-sm text-gray-500'>{user.role === 'AD' ? 'Admin' : user.role}</div>
+        <div className='text-sm text-gray-500'>Nhân viên bán hàng</div>
       </div>
     </div>
   )

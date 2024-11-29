@@ -19,10 +19,13 @@ import { useToast } from '@/hooks/use-toast'
 import axiosInstance from '@/config/axiosConfig'
 import { UserDialog } from './_components/dialog'
 import BreadcrumbComponent from '@/components/breadcrumb'
-
+interface UserWithKPI extends User {
+  targetRevenue?: number
+  targetOrders?: number
+}
 export default function UserManagement() {
   const { toast } = useToast()
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<UserWithKPI[]>([])
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
@@ -71,12 +74,12 @@ export default function UserManagement() {
     setIsEditOpen(true)
   }
 
-  const handleUpdate = async (updatedUser: User) => {
+  const handleUpdate = async (updatedUser: UserWithKPI) => {
     const updatedUsers = users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
     setUsers(updatedUsers)
 
     try {
-      await axiosInstance.patch<any, User>(`/user/${updatedUser.id}`, updatedUser)
+      await axiosInstance.patch<any, UserWithKPI>(`/user/${updatedUser.id}`, updatedUser)
       const updatedUsers = users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
       setUsers(updatedUsers)
       toast({
