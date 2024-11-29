@@ -20,12 +20,13 @@ import AlertDialogComponent from '@/components/alert-dialog'
 import { formatCurrency } from '@/lib/utils'
 import BreadcrumbComponent from '@/components/breadcrumb'
 import { Input } from '@/components/ui/input'
+import { useRouter } from 'next/navigation'
 
 const ExportOrderPage = () => {
   const [exportOrders, setExportOrders] = useState<ExportOrder[]>([]) // Sử dụng mảng PurchaseOrder
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-
+  const route = useRouter()
   useEffect(() => {
     const getExportOrders = async () => {
       try {
@@ -58,8 +59,9 @@ const ExportOrderPage = () => {
 
   const onComfirm = async (id: number) => {
     try {
-      window.open(`/invoice/export-order/${id}`, '_blank')
+      window.open(`/invoice/export-order/${id}`, 'Print Invoice', 'height=600,width=800')
       await axiosInstance.patch(`/export-order/${id}`)
+      route.refresh()
     } catch (error) {
       console.error('Error update purchase:', error)
     }

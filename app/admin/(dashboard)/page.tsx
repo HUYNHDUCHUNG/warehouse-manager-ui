@@ -66,10 +66,18 @@ const Dashboard = () => {
     // Ngày hiện tại
     const today = new Date(year, month, now.getDate())
 
-    // Chuyển sang chuỗi để phù hợp với ReactNode
+    // Sử dụng format cố định để tránh hydration error
+    const formatDate = (date: Date) => {
+      return date.toLocaleDateString('en-US', {
+        month: 'numeric',
+        day: 'numeric',
+        year: 'numeric'
+      })
+    }
+
     return {
-      startOfMonth: startOfMonth.toLocaleDateString(),
-      today: today.toLocaleDateString()
+      startOfMonth: formatDate(startOfMonth),
+      today: formatDate(today)
     }
   }
 

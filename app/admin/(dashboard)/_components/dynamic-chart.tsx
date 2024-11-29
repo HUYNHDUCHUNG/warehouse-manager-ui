@@ -8,6 +8,7 @@ interface OrderData {
   name: string
   Orders: number
   ExportOrder: number
+  PurchaseOrder: number
 }
 
 type ChartComponentType = React.ComponentType<{ data: OrderData[] }>
@@ -23,7 +24,6 @@ const DynamicChart: React.FC = () => {
   const [chartData, setChartData] = useState<OrderData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
   // Fetch data
   useEffect(() => {
     const fetchData = async () => {
@@ -46,7 +46,7 @@ const DynamicChart: React.FC = () => {
   // Load Recharts components
   useEffect(() => {
     import('recharts').then((RechartsModule) => {
-      const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } =
+      const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } =
         RechartsModule
 
       const Chart: ChartComponentType = ({ data }) => (
@@ -57,10 +57,16 @@ const DynamicChart: React.FC = () => {
             <YAxis tick={{ fontSize: 12 }} />
             <Tooltip
               contentStyle={{ fontSize: 12 }}
-              formatter={(value: number) => [`${value}`, '']}
+              formatter={(value: number, name: string) => [
+                `${value}`,
+                name === 'PurchaseOrder' ? 'Đơn Nhập Kho' : 'Đơn Xuất Hàng'
+              ]}
             />
-            <Bar dataKey='Orders' fill='#8884d8' name='Orders' />
-            <Bar dataKey='ExportOrder' fill='#82ca9d' name='ExportOrder' />
+            <Legend
+              formatter={(value) => (value === 'PurchaseOrder' ? 'Đơn Nhập Kho' : 'Đơn Xuất Hàng')}
+            />
+            <Bar dataKey='PurchaseOrder' fill='#8884d8' name='PurchaseOrder' barSize={30} />
+            <Bar dataKey='ExportOrder' fill='#82ca9d' name='ExportOrder' barSize={30} />
           </BarChart>
         </ResponsiveContainer>
       )

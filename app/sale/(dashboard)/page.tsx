@@ -2,7 +2,7 @@
 import { ExportOrder } from '@/@types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { DollarSign, ShoppingCart, Target, TrendingUp } from 'lucide-react'
+import { HandCoins, ShoppingCart, Target, TrendingUp } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import SalesKPIChart from './_components/sale-kpi-chart'
 
@@ -175,7 +175,7 @@ const SalesDashboard: React.FC = () => {
         <Card className='bg-gradient-to-r from-green-50 to-green-100 border-green-200'>
           <CardHeader className='flex flex-row items-center justify-between'>
             <CardTitle className='text-sm font-medium text-green-800'>Doanh Thu</CardTitle>
-            <DollarSign className='h-5 w-5 text-green-600' />
+            <HandCoins className='h-5 w-5 text-green-600' />
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold text-green-900'>
