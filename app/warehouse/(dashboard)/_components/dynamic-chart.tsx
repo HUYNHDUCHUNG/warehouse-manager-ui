@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import React, { useEffect, useState } from 'react'
 import axiosInstance from '@/config/axiosConfig'
@@ -7,6 +8,7 @@ interface OrderData {
   name: string
   Orders: number
   ExportOrder: number
+  PurchaseOrder: number
 }
 
 type ChartComponentType = React.ComponentType<{ data: OrderData[] }>
@@ -22,17 +24,14 @@ const DynamicChart: React.FC = () => {
   const [chartData, setChartData] = useState<OrderData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
   // Fetch data
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get<ChartProps>('/analytic/order-statistics')
+        const response = await axiosInstance.get<any, ChartProps>('/analytic/order-statistics')
         console.log(response)
         if (response.success) {
           setChartData(response.data)
-        } else {
-          throw new Error(response.data.message)
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch data')
@@ -47,7 +46,7 @@ const DynamicChart: React.FC = () => {
   // Load Recharts components
   useEffect(() => {
     import('recharts').then((RechartsModule) => {
-      const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } =
+      const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } =
         RechartsModule
 
       const Chart: ChartComponentType = ({ data }) => (
@@ -58,10 +57,16 @@ const DynamicChart: React.FC = () => {
             <YAxis tick={{ fontSize: 12 }} />
             <Tooltip
               contentStyle={{ fontSize: 12 }}
-              formatter={(value: number) => [`${value}`, '']}
+              formatter={(value: number, name: string) => [
+                `${value}`,
+                name === 'PurchaseOrder' ? 'Đơn Nhập Kho' : 'Đơn Xuất Hàng'
+              ]}
             />
-            <Bar dataKey='Orders' fill='#8884d8' name='Tổng đơn hàng' />
-            <Bar dataKey='ExportOrder' fill='#82ca9d' name='Đơn xuất' />
+            <Legend
+              formatter={(value) => (value === 'PurchaseOrder' ? 'Đơn Nhập Kho' : 'Đơn Xuất Hàng')}
+            />
+            <Bar dataKey='PurchaseOrder' fill='#8884d8' name='PurchaseOrder' barSize={30} />
+            <Bar dataKey='ExportOrder' fill='#82ca9d' name='ExportOrder' barSize={30} />
           </BarChart>
         </ResponsiveContainer>
       )

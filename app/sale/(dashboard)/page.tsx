@@ -140,6 +140,13 @@ const SalesDashboard: React.FC = () => {
   //     </linearGradient>
   //   )
   // }
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-US', {
+      month: 'numeric',
+      day: 'numeric',
+      year: 'numeric'
+    })
+  }
 
   return (
     <div className='p-6 space-y-6 bg-gray-50'>
@@ -149,7 +156,7 @@ const SalesDashboard: React.FC = () => {
         </h1>
         <div className='flex items-center space-x-2 text-sm text-gray-600'>
           <TrendingUp className='w-4 h-4' />
-          <span>Cập nhật mới nhất: {new Date().toString()}</span>
+          <span>Cập nhật mới nhất: {formatDate(new Date())}</span>
         </div>
       </div>
 
@@ -204,7 +211,7 @@ const SalesDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold text-purple-900'>
-              {kpiData?.monthlyProgress.actualOrders}/{kpiData?.monthlyProgress?.targetOrders}
+              {kpiData?.monthlyProgress?.actualOrders}/{kpiData?.monthlyProgress?.targetOrders}
             </div>
             <div className='flex items-center space-x-2 mt-2'>
               <Progress
@@ -212,7 +219,7 @@ const SalesDashboard: React.FC = () => {
                 className='bg-purple-200'
               />
               <span className='text-sm text-purple-700'>
-                {kpiData?.monthlyProgress.ordersProgress}%
+                {kpiData?.monthlyProgress?.ordersProgress}%
               </span>
             </div>
           </CardContent>

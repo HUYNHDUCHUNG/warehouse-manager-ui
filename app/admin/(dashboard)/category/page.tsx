@@ -26,9 +26,10 @@ const CategoryPage = () => {
   const { toast } = useToast()
   const [categories, setCategories] = useState<Category[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<Category>()
+  const [selectedCategory, setSelectedCategory] = useState<Category | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+
   const fetchCategories = async () => {
     try {
       const data = await axiosInstance.get<any, Category[]>('/category')
@@ -59,35 +60,66 @@ const CategoryPage = () => {
     setIsDialogOpen(true)
   }
 
-  const handleSubmit = async (data: Partial<Category>) => {
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false)
+    setSelectedCategory(undefined)
+  }
+
+  const handleAdd = async (data: Partial<Category>) => {
     try {
-      if (selectedCategory) {
-        // Edit mode
-        await axiosInstance.patch(`/category/${selectedCategory.id}`, data)
-        toast({
-          title: 'Thành công',
-          description: 'Cập nhật danh mục thành công',
-          variant: 'success',
-          icon: <CheckCircle2 className='h-5 w-5' />
-        })
-      } else {
-        // Add mode
-        await axiosInstance.post('/category', data)
-        toast({
-          title: 'Thành công',
-          description: 'Thêm danh mục thành công',
-          variant: 'success',
-          icon: <CheckCircle2 className='h-5 w-5' />
-        })
-      }
-      fetchCategories()
+      const newCategory = await axiosInstance.post<Category, any>('/category', data)
+      setCategories([newCategory, ...categories])
+      toast({
+        title: 'Thành công',
+        description: 'Thêm danh mục thành công',
+        variant: 'success',
+        icon: <CheckCircle2 className='h-5 w-5' />
+      })
+      handleCloseDialog()
     } catch (error) {
-      console.error('Error submitting category:', error)
+      console.error('Error adding category:', error)
       toast({
         variant: 'destructive',
         title: 'Lỗi',
-        description: 'Không thể lưu thông tin danh mục'
+        description: 'Không thể thêm danh mục'
       })
+    }
+  }
+
+  const handleUpdate = async (data: Partial<Category>) => {
+    try {
+      if (!selectedCategory?.id) return
+      const updatedCategory = await axiosInstance.patch<Category, any>(
+        `/category/${selectedCategory.id}`,
+        data
+      )
+      console.log(updatedCategory)
+      setCategories((prev) =>
+        prev.map((category) => (category.id === selectedCategory.id ? updatedCategory : category))
+      )
+
+      toast({
+        title: 'Thành công',
+        description: 'Cập nhật danh mục thành công',
+        variant: 'success',
+        icon: <CheckCircle2 className='h-5 w-5' />
+      })
+      handleCloseDialog()
+    } catch (error) {
+      console.error('Error updating category:', error)
+      toast({
+        variant: 'destructive',
+        title: 'Lỗi',
+        description: 'Không thể cập nhật danh mục'
+      })
+    }
+  }
+
+  const handleSubmit = (data: Partial<Category>) => {
+    if (selectedCategory) {
+      handleUpdate(data)
+    } else {
+      handleAdd(data)
     }
   }
 
@@ -101,7 +133,6 @@ const CategoryPage = () => {
         variant: 'success',
         icon: <CheckCircle2 className='h-5 w-5' />
       })
-      router.refresh()
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -111,10 +142,10 @@ const CategoryPage = () => {
     }
   }
 
-  const items = [{ label: 'Home', href: '/admin' }, { label: 'QL danh mục' }]
   const filteredCategories = categories.filter((category) =>
-    category?.name.toLowerCase().includes(searchTerm.toLowerCase())
+    category?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   )
+  const items = [{ label: 'Home', href: '/admin' }, { label: 'QL danh mục' }]
   return (
     <div>
       <div className='mb-4'>
@@ -196,7 +227,7 @@ const CategoryPage = () => {
 
         <CategoryDialog
           isOpen={isDialogOpen}
-          onClose={() => setIsDialogOpen(false)}
+          onClose={handleCloseDialog}
           onSubmit={handleSubmit}
           initialData={selectedCategory}
         />

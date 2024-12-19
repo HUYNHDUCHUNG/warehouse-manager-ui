@@ -176,12 +176,12 @@ export default function Sidebar() {
         {
           icon: <Minus className='w-4 h-4' />,
           label: 'Báo cáo tồn kho',
-          href: '/admin/reports/inventory'
+          href: '/warehouse/reports/inventory'
         },
         {
           icon: <Minus className='w-4 h-4' />,
           label: 'Báo cáo doanh thu',
-          href: '/admin/reports/revenue'
+          href: '/warehouse/reports/revenue'
         }
       ]
     },
