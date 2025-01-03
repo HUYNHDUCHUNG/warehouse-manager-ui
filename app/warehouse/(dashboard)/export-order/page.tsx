@@ -14,18 +14,19 @@ import { Skeleton } from '@/components/ui/skeleton'
 import axiosInstance from '@/config/axiosConfig'
 import { ExportOrder } from '@/@types'
 
-import { Search, Trash } from 'lucide-react'
+import { CheckCircle, List, Search, Trash } from 'lucide-react'
 import Link from 'next/link'
 import AlertDialogComponent from '@/components/alert-dialog'
 import { formatCurrency } from '@/lib/utils'
 import BreadcrumbComponent from '@/components/breadcrumb'
 import { Input } from '@/components/ui/input'
+import { useRouter } from 'next/navigation'
 
 const ExportOrderPage = () => {
   const [exportOrders, setExportOrders] = useState<ExportOrder[]>([]) // Sử dụng mảng PurchaseOrder
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-
+  const route = useRouter()
   useEffect(() => {
     const getExportOrders = async () => {
       try {
@@ -58,13 +59,14 @@ const ExportOrderPage = () => {
 
   const onComfirm = async (id: number) => {
     try {
-      window.open(`/invoice/export-order/${id}`, '_blank')
+      window.open(`/invoice/export-order/${id}`, 'Print Invoice', 'height=600,width=800')
       await axiosInstance.patch(`/export-order/${id}`)
+      route.refresh()
     } catch (error) {
       console.error('Error update purchase:', error)
     }
   }
-  const items = [{ label: 'Home', href: '/admin' }, { label: 'QL xuất kho' }]
+  const items = [{ label: 'Home', href: '/warehouse' }, { label: 'QL xuất kho' }]
   const filteredExportOrders = exportOrders.filter(
     (exportOrder) =>
       exportOrder?.codeExportOrder?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -145,23 +147,26 @@ const ExportOrderPage = () => {
                       cancelText='Hủy bỏ'
                       onConfirm={() => onDelete(exportOrder.id)} // Thay đổi hàm xóa thành onDeletePurchase
                       triggerElement={
-                        <Button className='bg-red-600 hover:bg-red-500'>
-                          <Trash size={14} />
+                        <Button variant='destructive' size='icon'>
+                          <Trash className='w-4 h-4' />
                         </Button>
                       }
                     />
 
                     {exportOrder?.id && (
                       <Link href={`/admin/export-order/detail/${exportOrder.id}`}>
-                        <Button className='bg-sky-600 hover:bg-sky-500'>Detail</Button>
+                        <Button variant='secondary' size='icon'>
+                          <List className='w-4 h-4' />
+                        </Button>
                       </Link>
                     )}
                     {exportOrder.isFullyAvailable && !exportOrder.status && (
                       <Button
                         onClick={() => onComfirm(exportOrder.id)}
-                        className='bg-sky-600 hover:bg-sky-500'
+                        variant='default'
+                        size='icon'
                       >
-                        Xác nhận
+                        <CheckCircle className='w-4 h-4' />
                       </Button>
                     )}
                   </TableCell>

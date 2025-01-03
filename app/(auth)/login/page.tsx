@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
-import { Package, Eye, EyeOff, CheckCircle2 } from 'lucide-react'
+import { Package, Eye, EyeOff, CheckCircle2, Loader2 } from 'lucide-react'
 
 import {
   Card,
@@ -25,7 +25,6 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form'
-// import { loginAction } from '@/action/auth'
 import { useToast } from '@/hooks/use-toast'
 import { loginAction } from '@/action/auth/login'
 
@@ -60,7 +59,6 @@ export default function LoginPage() {
           title: 'Đăng nhập thành công',
           description: 'Chuyển hướng đến trang chủ...',
           variant: 'success',
-          // Optional: Thêm icon cho toast
           icon: <CheckCircle2 className='h-5 w-5' />
         })
         if (response.data.role === 'AD') {
@@ -72,10 +70,6 @@ export default function LoginPage() {
         if (response.data.role === 'SALE') {
           router.replace('/sale')
         }
-
-        // Chuyển hướng dựa vào role từ response
-        // const dashboardPath =
-        //   response.data.role === 'ADMIN' ? '/dashboard/admin' : '/dashboard/warehouse'
       }
     } catch (error) {
       toast({
@@ -162,10 +156,17 @@ export default function LoginPage() {
                 <CardFooter>
                   <Button
                     type='submit'
-                    className='w-full bg-blue-600 hover:bg-blue-700'
+                    className='w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center'
                     disabled={isLoading}
                   >
-                    {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+                    {isLoading ? (
+                      <>
+                        <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                        Đang đăng nhập...
+                      </>
+                    ) : (
+                      'Đăng nhập'
+                    )}
                   </Button>
                 </CardFooter>
               </form>

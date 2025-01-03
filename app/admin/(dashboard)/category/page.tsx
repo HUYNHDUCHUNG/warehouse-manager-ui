@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/table'
 import axiosInstance from '@/config/axiosConfig'
 import { Pencil, Trash, Plus, CheckCircle2, Search } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import BreadcrumbComponent from '@/components/breadcrumb'
 import { useToast } from '@/hooks/use-toast'
@@ -22,7 +21,6 @@ import { CategoryDialog } from './_components/dialog'
 import { Input } from '@/components/ui/input'
 
 const CategoryPage = () => {
-  const router = useRouter()
   const { toast } = useToast()
   const [categories, setCategories] = useState<Category[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)

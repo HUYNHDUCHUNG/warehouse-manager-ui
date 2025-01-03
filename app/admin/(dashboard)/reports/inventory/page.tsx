@@ -44,6 +44,7 @@ interface DateRange {
   from: Date | undefined
   to: Date | undefined
 }
+
 type InventoryDetail = {
   product_id: number
   product_name: string
@@ -89,15 +90,21 @@ const InventoryReportPage = () => {
     from: undefined,
     to: undefined
   })
-  const [selectedMonth, setSelectedMonth] = useState<string>(format(new Date(), 'MM-yyyy'))
+  const [selectedMonth, setSelectedMonth] = useState<string>(format(new Date(), 'MM'))
+  const [selectedYear, setSelectedYear] = useState<string>(format(new Date(), 'yyyy'))
 
+  // Generate array of months
   const months = Array.from({ length: 12 }, (_, i) => {
-    const date = new Date(2024, i, 1)
+    const date = new Date(2000, i, 1) // Using 2000 as a base year since we only need month names
     return {
-      value: format(date, 'MM-yyyy'),
-      label: format(date, 'MMMM yyyy', { locale: vi })
+      value: format(date, 'MM'),
+      label: format(date, 'MMMM', { locale: vi })
     }
   })
+
+  // Generate array of years (from 5 years ago to 5 years ahead)
+  const currentYear = new Date().getFullYear()
+  const years = Array.from({ length: 11 }, (_, i) => (currentYear - 5 + i).toString())
 
   useEffect(() => {
     fetchInventoryReports()
@@ -107,13 +114,16 @@ const InventoryReportPage = () => {
     startDate?: string
     endDate?: string
     month?: string
+    year?: string
   }) => {
     setLoading(true)
     try {
       const queryParams = new URLSearchParams()
       if (params?.startDate) queryParams.append('startDate', params.startDate)
       if (params?.endDate) queryParams.append('endDate', params.endDate)
-      if (params?.month) queryParams.append('month', params.month)
+      if (params?.month && params?.year) {
+        queryParams.append('month', `${params.month}-${params.year}`)
+      }
 
       const url = `/report/inventory${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
       const data = await axiosInstance.get<any, InventoryReport>(url)
@@ -136,14 +146,19 @@ const InventoryReportPage = () => {
         })
       }
     } else {
-      fetchInventoryReports({ month: selectedMonth })
+      fetchInventoryReports({
+        month: selectedMonth,
+        year: selectedYear
+      })
     }
   }
 
   const calculateTotalValue = () => {
     return report?.details.reduce((sum, detail) => sum + (parseInt(detail.inventory_value) || 0), 0)
   }
+
   const items = [{ label: 'Home', href: '/admin' }, { label: 'Báo cáo tồn kho' }]
+
   return (
     <div>
       <div className='mb-4'>
@@ -177,13 +192,26 @@ const InventoryReportPage = () => {
               {filterType === 'month' ? (
                 <div className='flex items-center gap-4'>
                   <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                    <SelectTrigger className='w-[240px]'>
+                    <SelectTrigger className='w-[180px]'>
                       <SelectValue placeholder='Chọn tháng' />
                     </SelectTrigger>
                     <SelectContent>
                       {months.map((month) => (
                         <SelectItem key={month.value} value={month.value}>
                           {month.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={selectedYear} onValueChange={setSelectedYear}>
+                    <SelectTrigger className='w-[120px]'>
+                      <SelectValue placeholder='Chọn năm' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {years.map((year) => (
+                        <SelectItem key={year} value={year}>
+                          {year}
                         </SelectItem>
                       ))}
                     </SelectContent>

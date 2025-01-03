@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -19,13 +19,22 @@ interface CategoryDialogProps {
 }
 
 export function CategoryDialog({ isOpen, onClose, onSubmit, initialData }: CategoryDialogProps) {
-  const [formData, setFormData] = useState<Partial<Category>>(
-    initialData || {
-      name: ''
-    }
-  )
+  const [formData, setFormData] = useState<Partial<Category>>({
+    name: ''
+  })
 
   const [errors, setErrors] = useState<Partial<Record<keyof Category, string>>>({})
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData)
+    } else {
+      // Reset form when opening for new category
+      setFormData({ name: '' })
+    }
+    // Reset errors when dialog opens/closes
+    setErrors({})
+  }, [initialData, isOpen])
 
   const validateForm = () => {
     const newErrors: Partial<Record<keyof Category, string>> = {}
@@ -43,7 +52,6 @@ export function CategoryDialog({ isOpen, onClose, onSubmit, initialData }: Categ
 
     if (validateForm()) {
       onSubmit(formData)
-      onClose()
     }
   }
 
@@ -52,7 +60,7 @@ export function CategoryDialog({ isOpen, onClose, onSubmit, initialData }: Categ
       ...prev,
       [field]: e.target.value
     }))
-    // Clear error when user starts typing
+
     if (errors[field]) {
       setErrors((prev) => ({
         ...prev,
@@ -75,7 +83,7 @@ export function CategoryDialog({ isOpen, onClose, onSubmit, initialData }: Categ
               </Label>
               <Input
                 id='name'
-                value={formData.name}
+                value={formData.name || ''}
                 onChange={handleChange('name')}
                 className='col-span-3'
               />

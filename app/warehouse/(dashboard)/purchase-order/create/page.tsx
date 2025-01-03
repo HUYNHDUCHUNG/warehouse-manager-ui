@@ -63,7 +63,7 @@ const formSchema = z.object({
   supplier_id: z.number().min(1, 'Chọn nhà cung cấp'),
   note: z.string().optional(),
   dateImport: z.string(),
-  products: z.array(productSchema).min(1, 'Cần ít nhất một sản phẩm')
+  products: z.array(productSchema).min(1, 'Phải có ít nhất một sản phẩm')
 })
 
 const CreatePurchaseOrder = () => {
@@ -98,6 +98,7 @@ const CreatePurchaseOrder = () => {
   }, [])
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log('hungne')
     try {
       const response = await fetch('/api/purchase-order', {
         method: 'POST',
@@ -113,7 +114,7 @@ const CreatePurchaseOrder = () => {
         throw new Error(data.error)
       }
 
-      router.push('/warehouse/purchase-order')
+      router.push('/admin/purchase-order')
       toast({
         title: 'Thông báo',
         description: 'Thêm đơn nhập hàng thành công',
@@ -144,7 +145,7 @@ const CreatePurchaseOrder = () => {
 
     if (field === 'unitPrice' || field === 'quantity') {
       const unitPrice = parseFloat(updatedList[index].unitPrice) || 0
-      const quantity = parseInt(updatedList[index].quantity) || 0
+      const quantity = parseFloat(updatedList[index].quantity) || 0
       updatedList[index].totalPrice = (unitPrice * quantity).toString()
     }
 
@@ -157,8 +158,8 @@ const CreatePurchaseOrder = () => {
     }, 0)
   }, [productList])
   const items = [
-    { label: 'Home', href: '/warehouse' },
-    { label: 'QL nhập kho', href: '/warehouse/purchase-order' },
+    { label: 'Home', href: '/admin' },
+    { label: 'QL nhập kho', href: '/admin/purchase-order' },
     { label: 'Thêm đơn nhập kho' }
   ]
 

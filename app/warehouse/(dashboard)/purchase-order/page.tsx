@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { PurchaseOrder } from '@/@types'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -10,22 +11,22 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { Skeleton } from '@/components/ui/skeleton'
 import axiosInstance from '@/config/axiosConfig'
-import { PurchaseOrder } from '@/@types'
+import { useEffect, useRef, useState } from 'react'
 
-import { Search, Trash } from 'lucide-react'
-import Link from 'next/link'
 import AlertDialogComponent from '@/components/alert-dialog'
-import { formatCurrency } from '@/lib/utils'
 import BreadcrumbComponent from '@/components/breadcrumb'
 import { Input } from '@/components/ui/input'
+import { formatCurrency } from '@/lib/utils'
+import { Printer, Search, Trash } from 'lucide-react'
+import Link from 'next/link'
 
 const PurchaseOrderPage = () => {
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]) // Sử dụng mảng PurchaseOrder
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-
+  const [file, setFile] = useState<File | undefined>()
+  const fileRef = useRef<HTMLInputElement>(null)
   useEffect(() => {
     const getPurchaseOrders = async () => {
       try {
@@ -43,6 +44,61 @@ const PurchaseOrderPage = () => {
     getPurchaseOrders()
   }, [])
 
+  const handleImport = () => {
+    fileRef.current?.click()
+    console.log(file)
+  }
+  const handleChangeFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+
+    // Kiểm tra có file được chọn không
+    if (!file) {
+      console.log('No file selected')
+      return
+    }
+
+    // Log thông tin file
+    console.log('File selected:', {
+      name: file.name,
+      type: file.type,
+      size: file.size
+    })
+
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
+      console.log('Sending request...')
+      const response = await axiosInstance.post('/purchase-order/import-file', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+
+      console.log('Response:', response.data)
+
+      // Xử lý response thành công
+      if (response.data.success) {
+        // Hiển thị thông báo thành công
+        console.log('Import successful:', response.data.data)
+      }
+    } catch (error) {
+      // Log chi tiết về lỗi
+      console.error('Import error:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      })
+
+      // Hiển thị thông báo lỗi cho người dùng
+      if (error.response?.status === 400) {
+        console.error('File validation error:', error.response.data.message)
+      } else {
+        console.error('Server error:', error.message)
+      }
+    }
+  }
+
   const onDelete = async (id: number) => {
     try {
       // Gọi API xóa đơn mua hàng theo id
@@ -55,7 +111,7 @@ const PurchaseOrderPage = () => {
       // Hiển thị thông báo lỗi nếu cần (bạn có thể dùng toast hoặc alert)
     }
   }
-  const items = [{ label: 'Home', href: '/admin' }, { label: 'QL nhập kho' }]
+  const items = [{ label: 'Home', href: '/warehouse' }, { label: 'QL nhập kho' }]
   const filteredPurchaseOrders = purchaseOrders.filter(
     (purchaseOrder) =>
       purchaseOrder?.codePurchaseOrder?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -74,9 +130,20 @@ const PurchaseOrderPage = () => {
       <div className='bg-white p-4 rounded-xl'>
         <div className='flex justify-between mb-4'>
           <h1 className='text-2xl font-bold'>Danh sách đơn hàng nhập</h1>
-          <Link href={'/warehouse/purchase-order/create'}>
-            <Button>Tạo đơn nhập mới</Button>
-          </Link>
+          <div className='flex gap-2'>
+            <Link href={'/admin/purchase-order/create'}>
+              <Button>Tạo đơn nhập mới</Button>
+            </Link>
+
+            <Button onClick={handleImport}>Import</Button>
+            <Input
+              className='hidden'
+              type='file'
+              hidden
+              ref={fileRef}
+              onChange={handleChangeFile}
+            />
+          </div>
         </div>
         <div className='flex items-center py-4'>
           <div className='relative flex-1'>
@@ -127,8 +194,8 @@ const PurchaseOrderPage = () => {
                       cancelText='Hủy bỏ'
                       onConfirm={() => onDelete(order.id)} // Thay đổi hàm xóa thành onDeletePurchase
                       triggerElement={
-                        <Button className='bg-red-600 hover:bg-red-500'>
-                          <Trash size={14} />
+                        <Button variant='destructive' size='icon'>
+                          <Trash className='w-4 h-4' />
                         </Button>
                       }
                     />
@@ -141,9 +208,10 @@ const PurchaseOrderPage = () => {
                             'height=600,width=800'
                           )
                         }
-                        className='bg-sky-600 hover:bg-sky-500'
+                        variant='secondary'
+                        size='icon'
                       >
-                        Invoice
+                        <Printer className='w-4 h-4' />
                       </Button>
                     )}
                   </TableCell>

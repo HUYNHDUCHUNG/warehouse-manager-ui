@@ -41,17 +41,29 @@ import { useToast } from '@/hooks/use-toast'
 import { CheckCircle2 } from 'lucide-react'
 
 const productSchema = z.object({
-  productId: z.string().min(1, 'Chọn sản phẩm'),
-  unitPrice: z.string().min(1, 'Nhập đơn giá'),
-  quantity: z.string().min(1, 'Nhập số lượng'),
+  productId: z.string().min(1, 'Chọn khách hàng'),
+  unitPrice: z.string().refine(
+    (value) => {
+      const numValue = parseFloat(value)
+      return !isNaN(numValue) && numValue > 0
+    },
+    { message: 'Đơn giá phải lớn hơn 0' }
+  ),
+  quantity: z.string().refine(
+    (value) => {
+      const numValue = parseInt(value)
+      return !isNaN(numValue) && numValue > 0
+    },
+    { message: 'Số lượng phải lớn hơn 0' }
+  ),
   totalPrice: z.string().min(1, 'Tổng giá không hợp lệ')
 })
 
 const formSchema = z.object({
-  customerId: z.number().min(1, 'Chọn nhà cung cấp'),
+  customerId: z.number().min(1, 'Chọn khách hàng'),
   note: z.string().optional(),
   dateExport: z.string(),
-  products: z.array(productSchema)
+  products: z.array(productSchema).min(1, 'Cần ít nhất một sản phẩm')
 })
 
 const CreatePurchaseOrder = () => {
@@ -103,7 +115,7 @@ const CreatePurchaseOrder = () => {
         throw new Error(data.error)
       }
 
-      router.push('/sale/export-order')
+      router.push('/admin/export-order')
       toast({
         title: 'Thông báo',
         description: 'Thêm đơn xuất hàng thành công',
@@ -147,8 +159,8 @@ const CreatePurchaseOrder = () => {
     }, 0)
   }, [productList])
   const items = [
-    { label: 'Home', href: '/sale' },
-    { label: 'QL xuất kho', href: '/sale/export-order' },
+    { label: 'Home', href: '/admin' },
+    { label: 'QL xuất kho', href: '/admin/export-order' },
     { label: 'Thêm đơn xuất kho' }
   ]
 

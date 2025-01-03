@@ -157,6 +157,7 @@ const SupplierPage = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>STT</TableHead>
+                <TableHead>Mã nhà cung cấp</TableHead>
                 <TableHead>Tên nhà cung cấp</TableHead>
                 <TableHead>Địa chỉ</TableHead>
                 <TableHead>Email</TableHead>
@@ -168,6 +169,7 @@ const SupplierPage = () => {
               {filteredSuppliers.map((supplier, index) => (
                 <TableRow key={supplier.id}>
                   <TableCell>{index + 1}</TableCell>
+                  <TableCell>{supplier.code}</TableCell>
                   <TableCell>{supplier.supplier_name}</TableCell>
                   <TableCell>{supplier.contract}</TableCell>
                   <TableCell>{supplier.email}</TableCell>

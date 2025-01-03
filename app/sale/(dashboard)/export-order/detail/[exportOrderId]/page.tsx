@@ -65,11 +65,11 @@ const ExportOrderDetailPage = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href='/sale'>Home</BreadcrumbLink>
+                <BreadcrumbLink href='/admin'>Home</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href='/sale/export-order'>Quản lý xuất kho</BreadcrumbLink>
+                <BreadcrumbLink href='/admin/export-order'>Quản lý xuất kho</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
